@@ -1,35 +1,46 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { PickupRequest } from '../../../../shared/types';
-import { mockPickupsList } from '../../mock/pickups';
+import { pickupService } from '../../services/pickup.service';
+import { useAuth } from '../auth/AuthContext';
 
 interface PickupContextType {
   pickups: PickupRequest[];
-  createPickup: (pickup: Partial<PickupRequest>) => void;
+  createPickup: (pickup: Partial<PickupRequest>) => Promise<void>;
   updateStatus: (pickupId: string, status: PickupRequest['status'], actualWeight?: number) => void;
+  refreshPickups: () => Promise<void>;
 }
 
 const PickupContext = createContext<PickupContextType | undefined>(undefined);
 
 export const PickupProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [pickups, setPickups] = useState<PickupRequest[]>(mockPickupsList);
+  const { user } = useAuth();
+  const [pickups, setPickups] = useState<PickupRequest[]>([]);
 
-  const createPickup = (newPickupData: Partial<PickupRequest>) => {
-    const newPickup: PickupRequest = {
-      id: `PU-${Math.floor(1000 + Math.random() * 9000)}`,
-      customerId: 'CUST-001',
-      customerName: 'Kasun Perera',
-      customerPhone: '+94 77 123 4567',
-      items: newPickupData.items || [],
-      totalEstimatedWeight: newPickupData.totalEstimatedWeight || 10,
-      estimatedPoints: (newPickupData.totalEstimatedWeight || 10) * 20,
-      status: 'pending',
-      scheduledDate: newPickupData.scheduledDate || '2026-08-07',
-      scheduledTimeSlot: newPickupData.scheduledTimeSlot || '09:00 AM - 11:00 AM',
-      address: newPickupData.address || { street: '15/A Havelock Road', city: 'Colombo 05', latitude: 6.891, longitude: 79.858 },
-      createdAt: new Date().toISOString()
+  useEffect(() => {
+    refreshPickups();
+  }, []);
+
+  const refreshPickups = async () => {
+    try {
+      const data = await pickupService.fetchPickups();
+      setPickups(data);
+    } catch (err) {
+      console.warn('Failed to load pickups:', err);
+    }
+  };
+
+  const createPickup = async (newPickupData: Partial<PickupRequest>) => {
+    const customerName = user?.name || 'Kasun Perera';
+    const customerPhone = user?.phone || '+94 77 123 4567';
+
+    const payload = {
+      ...newPickupData,
+      customerName,
+      customerPhone
     };
 
-    setPickups(prev => [newPickup, ...prev]);
+    const created = await pickupService.requestPickup(payload);
+    setPickups(prev => [created, ...prev]);
   };
 
   const updateStatus = (pickupId: string, status: PickupRequest['status'], actualWeight?: number) => {
@@ -48,7 +59,7 @@ export const PickupProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   return (
-    <PickupContext.Provider value={{ pickups, createPickup, updateStatus }}>
+    <PickupContext.Provider value={{ pickups, createPickup, updateStatus, refreshPickups }}>
       {children}
     </PickupContext.Provider>
   );

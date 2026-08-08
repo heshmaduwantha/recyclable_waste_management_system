@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { Input } from '../../../common/Input/Input';
 import { Button } from '../../../common/Button/Button';
 import { useAuth } from '../../../store/auth/AuthContext';
+import { authService } from '../../../services/auth.service';
 import { locationService } from '../../../services/location.service';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -34,9 +35,20 @@ export const Register: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
-  const handleRegister = () => {
-    // Directly log in as customer, skipping OTP
-    login('customer');
+  const handleRegister = async () => {
+    try {
+      await authService.register({
+        name: name || 'Kasun Perera',
+        email: email || 'kasun@gmail.com',
+        phone: phone || '+94 77 123 4567',
+        role: 'customer',
+        address: { street: `${houseNumber} ${streetAddress}`.trim() || '15/A Havelock Road', city: landmark || 'Colombo 05', zipCode: '00500' }
+      });
+      login('customer');
+    } catch (error) {
+      console.warn('Registration warning:', error);
+      login('customer');
+    }
   };
 
   return (

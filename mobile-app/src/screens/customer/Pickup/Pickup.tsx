@@ -95,8 +95,8 @@ export const CustomerPickup: React.FC<{ navigation: any; route?: any }> = ({ nav
     }
   });
 
-  const handleSubmit = () => {
-    createPickup({
+  const handleSubmit = async () => {
+    await createPickup({
       items: selectedCategories.map((cat) => {
         const mat = materials.find((m) => m.id === cat);
         return {
@@ -264,7 +264,7 @@ export const CustomerPickup: React.FC<{ navigation: any; route?: any }> = ({ nav
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC'
+    backgroundColor: '#F4FCEB'
   },
   contentContainer: {
     paddingBottom: 40
@@ -277,23 +277,23 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 20,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2
+    borderWidth: 1.5,
+    borderColor: '#18181B',
+    shadowColor: '#18181B',
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3
   },
   sectionHeaderTitle: {
     fontSize: 17,
     fontWeight: '900',
-    color: '#0F172A'
+    color: '#18181B'
   },
   sectionHeaderSub: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: '#256D38',
     marginTop: 2,
     marginBottom: 16
   },
@@ -308,14 +308,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: '#E2E8F0',
+    borderColor: '#18181B',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 8
   },
   selectedMaterialCard: {
-    backgroundColor: '#ECFDF5', // Soft emerald tint
-    borderColor: '#10B981'
+    backgroundColor: '#BEF264', // Lime Accent selected
+    borderColor: '#18181B'
   },
   materialLabel: {
     fontSize: 13,

@@ -89,7 +89,7 @@ export const PickerWeight: React.FC<{ navigation: any }> = ({ navigation }) => {
         />
       </View>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.camBtn}
         onPress={() => navigation.navigate('PickerCamera')}
       >

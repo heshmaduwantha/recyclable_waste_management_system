@@ -29,16 +29,16 @@ export const Splash: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.card, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
-        {/* Brand Icon with Soft Mint Circle */}
+        {/* Brand Icon with Soft Lime Circle */}
         <View style={styles.iconWrapper}>
           <Text style={styles.icon}>♻️</Text>
         </View>
 
         {/* Brand Title */}
         <Text style={styles.appName}>EcoCollect</Text>
-        <Text style={styles.tagline}>Smart Recyclable Waste Management</Text>
+        <Text style={styles.tagline}>Building the Future, Naturally 🌿</Text>
 
-        {/* Feature Badges */}
+        {/* Pitch Deck Feature Pill Badges */}
         <View style={styles.pillContainer}>
           <View style={styles.greenPill}>
             <Text style={styles.greenPillTxt}>🌿 Doorstep Pickups</Text>
@@ -49,7 +49,7 @@ export const Splash: React.FC<{ navigation: any }> = ({ navigation }) => {
         </View>
       </Animated.View>
 
-      <Text style={styles.footerTxt}>EcoCollect SAAS v1.0</Text>
+      <Text style={styles.footerTxt}>EcoCollect Enterprise v1.0</Text>
     </View>
   );
 };
@@ -57,7 +57,7 @@ export const Splash: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ECFDF5', // Soft Mint Background
+    backgroundColor: '#F4FCEB', // Soft Organic Bamboo Eco Cream
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24
@@ -66,27 +66,27 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 340,
     backgroundColor: '#FFFFFF',
-    borderRadius: 32,
+    borderRadius: 28,
     padding: 36,
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#A7F3D0',
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 18,
+    borderWidth: 2,
+    borderColor: '#18181B',
+    shadowColor: '#18181B',
+    shadowOffset: { width: 4, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
     elevation: 6
   },
   iconWrapper: {
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: '#D1FAE5',
+    backgroundColor: '#BEF264',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
     borderWidth: 2,
-    borderColor: '#10B981'
+    borderColor: '#18181B'
   },
   icon: {
     fontSize: 48
@@ -94,14 +94,15 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 32,
     fontWeight: '900',
-    color: '#0F172A',
+    color: '#18181B',
     letterSpacing: -0.6
   },
   tagline: {
     fontSize: 13,
-    color: '#047857',
+    color: '#256D38',
     marginTop: 6,
     fontWeight: '700',
+    fontStyle: 'italic',
     textAlign: 'center'
   },
   pillContainer: {
@@ -110,10 +111,12 @@ const styles = StyleSheet.create({
     marginTop: 24
   },
   greenPill: {
-    backgroundColor: '#10B981',
+    backgroundColor: '#256D38',
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 20
+    borderRadius: 9999,
+    borderWidth: 1.5,
+    borderColor: '#18181B'
   },
   greenPillTxt: {
     color: '#FFFFFF',
@@ -121,24 +124,23 @@ const styles = StyleSheet.create({
     fontWeight: '800'
   },
   yellowPill: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: '#BEF264',
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#F59E0B'
+    borderRadius: 9999,
+    borderWidth: 1.5,
+    borderColor: '#18181B'
   },
   yellowPillTxt: {
-    color: '#D97706',
+    color: '#18181B',
     fontSize: 12,
     fontWeight: '800'
   },
   footerTxt: {
     position: 'absolute',
     bottom: 36,
-    color: '#059669',
+    color: '#256D38',
     fontSize: 12,
     fontWeight: '800'
   }
 });
-

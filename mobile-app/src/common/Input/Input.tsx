@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#475569',
+    color: '#18181B',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
     marginBottom: 8
@@ -50,9 +50,9 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#18181B',
     borderRadius: 16,
     paddingHorizontal: 14,
     height: 52
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: '#0F172A',
+    color: '#18181B',
     paddingVertical: 10
   },
   iconBox: {
@@ -80,4 +80,3 @@ const styles = StyleSheet.create({
     fontWeight: '600'
   }
 });
-

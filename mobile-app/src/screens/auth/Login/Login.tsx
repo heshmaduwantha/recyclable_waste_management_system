@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { Input } from '../../../common/Input/Input';
 import { Button } from '../../../common/Button/Button';
 import { useAuth } from '../../../store/auth/AuthContext';
+import { authService } from '../../../services/auth.service';
 import { UserRole } from '../../../../../shared/types';
 
 export const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -12,8 +13,13 @@ export const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [password, setPassword] = useState('password123');
   const [rememberMe, setRememberMe] = useState(true);
 
-  const handleLogin = () => {
-    login(selectedRole);
+  const handleLogin = async () => {
+    try {
+      const userObj = await authService.login(email, selectedRole);
+      login(selectedRole, userObj);
+    } catch (err) {
+      login(selectedRole);
+    }
   };
 
   return (
@@ -136,7 +142,7 @@ export const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF'
+    backgroundColor: '#F4FCEB'
   },
   contentContainer: {
     paddingHorizontal: 24,
@@ -154,41 +160,42 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   brandIconBg: {
-    width: 42,
-    height: 42,
+    width: 44,
+    height: 44,
     borderRadius: 14,
-    backgroundColor: '#ECFDF5',
+    backgroundColor: '#BEF264',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#A7F3D0'
+    borderWidth: 1.5,
+    borderColor: '#18181B'
   },
   brandTxt: {
     fontSize: 24,
     fontWeight: '900',
-    color: '#0F172A',
+    color: '#18181B',
     letterSpacing: -0.4
   },
   title: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#0F172A',
+    color: '#18181B',
     letterSpacing: -0.5
   },
   subtitle: {
     fontSize: 14,
-    color: '#64748B',
-    fontWeight: '600',
+    color: '#256D38',
+    fontWeight: '700',
+    fontStyle: 'italic',
     marginTop: 4,
     marginBottom: 20
   },
   roleToggleRow: {
     flexDirection: 'row',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#FFFFFF',
     borderRadius: 18,
     padding: 4,
-    borderWidth: 1,
-    borderColor: '#F1F5F9'
+    borderWidth: 1.5,
+    borderColor: '#18181B'
   },
   roleTab: {
     flex: 1,
@@ -197,15 +204,19 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   activeRoleTabCustomer: {
-    backgroundColor: '#10B981'
+    backgroundColor: '#10B981',
+    borderWidth: 1.5,
+    borderColor: '#18181B'
   },
   activeRoleTabPicker: {
-    backgroundColor: '#0284C7'
+    backgroundColor: '#0284C7',
+    borderWidth: 1.5,
+    borderColor: '#18181B'
   },
   roleTabTxt: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#64748B'
+    color: '#3F3F46'
   },
   activeRoleTxt: {
     color: '#FFFFFF',

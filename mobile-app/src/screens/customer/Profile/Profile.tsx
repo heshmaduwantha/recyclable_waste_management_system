@@ -8,6 +8,14 @@ import { Ionicons } from '@expo/vector-icons';
 
 export const CustomerProfile: React.FC = () => {
   const { user, logout, switchRole } = useAuth();
+  const userDisplayName = user?.name || 'Kasun Perera';
+  const initials = userDisplayName
+    .split(' ')
+    .filter(Boolean)
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'KP';
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
@@ -17,12 +25,12 @@ export const CustomerProfile: React.FC = () => {
         {/* Profile Card with Vibrant Emerald Tint & Avatar */}
         <View style={styles.profileHeroCard}>
           <View style={styles.avatarWrapper}>
-            <Text style={styles.avatarTxt}>PS</Text>
+            <Text style={styles.avatarTxt}>{initials}</Text>
             <View style={styles.onlineBadgeDot} />
           </View>
 
-          <Text style={styles.userName}>{user?.name || 'Priya Sharma'}</Text>
-          <Text style={styles.userEmail}>{user?.email || 'priya@gmail.com'}</Text>
+          <Text style={styles.userName}>{userDisplayName}</Text>
+          <Text style={styles.userEmail}>{user?.email || 'kasun@gmail.com'}</Text>
           <Text style={styles.userPhone}>{user?.phone || '+94 77 123 4567'}</Text>
 
           {/* Prominent Eco Points Badge Chip */}
@@ -82,8 +90,8 @@ export const CustomerProfile: React.FC = () => {
 
         {/* Settings Action List */}
         <View style={styles.optionsGroup}>
-          <TouchableOpacity 
-            style={styles.optionRow} 
+          <TouchableOpacity
+            style={styles.optionRow}
             onPress={logout}
             activeOpacity={0.8}
           >
@@ -106,7 +114,7 @@ export const CustomerProfile: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC'
+    backgroundColor: '#F4FCEB'
   },
   contentContainer: {
     paddingBottom: 40
@@ -115,12 +123,17 @@ const styles = StyleSheet.create({
     padding: 20
   },
   profileHeroCard: {
-    backgroundColor: '#ECFDF5',
+    backgroundColor: '#FFFFFF',
     borderRadius: 26,
     padding: 22,
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: '#A7F3D0',
+    borderColor: '#18181B',
+    shadowColor: '#18181B',
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
     marginBottom: 20
   },
   avatarWrapper: {
@@ -128,8 +141,8 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: 36,
     backgroundColor: '#FEF3C7',
-    borderWidth: 3,
-    borderColor: '#F59E0B',
+    borderWidth: 2,
+    borderColor: '#18181B',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -154,13 +167,13 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#0F172A',
+    color: '#18181B',
     letterSpacing: -0.4
   },
   userEmail: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#475569',
+    color: '#3F3F46',
     marginTop: 2
   },
   userPhone: {
@@ -176,19 +189,14 @@ const styles = StyleSheet.create({
     marginTop: 16
   },
   pointsPill: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 9999,
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#F59E0B',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2
+    borderWidth: 1.5,
+    borderColor: '#18181B'
   },
   pointsValTxt: {
     fontSize: 14,
@@ -199,7 +207,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#10B981',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 20
+    borderRadius: 9999,
+    borderWidth: 1.5,
+    borderColor: '#18181B'
   },
   tierPillTxt: {
     fontSize: 12,
@@ -217,13 +227,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 16,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
+    borderWidth: 1.5,
+    borderColor: '#18181B',
+    shadowColor: '#18181B',
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.08,
     shadowRadius: 6,
-    elevation: 2
+    elevation: 3
   },
   metricVal: {
     fontSize: 18,

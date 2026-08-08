@@ -14,9 +14,6 @@ export const CustomerWallet: React.FC<{ navigation?: any }> = ({ navigation }) =
       <View style={styles.heroHeader}>
         <View style={styles.headerTopRow}>
           <Text style={styles.headerTitle}>Eco Wallet</Text>
-          <TouchableOpacity style={styles.qrBtn}>
-            <Text style={{ fontSize: 20 }}>🔳</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Floating Available Eco Points Card */}
@@ -28,8 +25,8 @@ export const CustomerWallet: React.FC<{ navigation?: any }> = ({ navigation }) =
           </View>
           <Text style={styles.equivTxt}>≈ LKR 490 equivalent value</Text>
 
-          <TouchableOpacity 
-            style={styles.redeemBtn} 
+          <TouchableOpacity
+            style={styles.redeemBtn}
             onPress={() => navigation?.navigate?.('CustomerRewards')}
             activeOpacity={0.85}
           >
@@ -96,7 +93,7 @@ export const CustomerWallet: React.FC<{ navigation?: any }> = ({ navigation }) =
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC'
+    backgroundColor: '#F4FCEB'
   },
   heroHeader: {
     backgroundColor: '#10B981', // Soft Premium Emerald Header #10B981
@@ -104,7 +101,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 28,
     borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32
+    borderBottomRightRadius: 32,
+    borderBottomWidth: 1.5,
+    borderBottomColor: '#18181B'
   },
   headerTopRow: {
     flexDirection: 'row',
@@ -119,33 +118,35 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5
   },
   qrBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF'
   },
   balanceCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
     borderRadius: 24,
     padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)'
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF'
   },
   balanceLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: 'rgba(255, 255, 255, 0.9)'
+    color: '#ECFDF5'
   },
   pointsValRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 6,
-    marginVertical: 4
+    marginTop: 4
   },
   pointsVal: {
-    fontSize: 38,
+    fontSize: 40,
     fontWeight: '900',
     color: '#FFFFFF',
     letterSpacing: -0.8
@@ -162,22 +163,24 @@ const styles = StyleSheet.create({
     marginBottom: 18
   },
   redeemBtn: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: '#BEF264',
     height: 50,
-    borderRadius: 25,
+    borderRadius: 9999,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
+    borderWidth: 1.5,
+    borderColor: '#18181B',
+    shadowColor: '#18181B',
+    shadowOffset: { width: 2, height: 3 },
     shadowOpacity: 0.12,
-    shadowRadius: 8,
+    shadowRadius: 6,
     elevation: 3
   },
   redeemBtnTxt: {
     fontSize: 16,
     fontWeight: '900',
-    color: '#0F172A'
+    color: '#18181B'
   },
   body: {
     padding: 20
@@ -190,13 +193,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2
+    borderWidth: 1.5,
+    borderColor: '#18181B',
+    shadowColor: '#18181B',
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3
   },
   metricCol: {
     alignItems: 'center',
@@ -205,7 +208,7 @@ const styles = StyleSheet.create({
   metricVal: {
     fontSize: 20,
     fontWeight: '900',
-    color: '#0F172A'
+    color: '#18181B'
   },
   metricSub: {
     fontSize: 11,

@@ -1,9 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Header/Header';
 import { adminTheme } from '../../theme/admin';
-import { BarChart3, Download, Calendar } from 'lucide-react';
+import { Download } from 'lucide-react';
+import { adminService, ESGReportItem } from '../../services/admin.service';
 
 export const Reports: React.FC = () => {
+  const [reports, setReports] = useState<ESGReportItem[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadReports() {
+      const data = await adminService.getReports();
+      if (isMounted) {
+        setReports(data);
+      }
+    }
+    loadReports();
+    return () => { isMounted = false; };
+  }, []);
+
+  const handleExportCsv = () => {
+    const headers = ['Metric Label', 'Metric Value', 'Notes'];
+    const rows = reports.map(r => [`"${r.label}"`, `"${r.value}"`, `"${r.note}"`]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `ESG_Impact_Report_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
       <Header title="Analytics & Impact Reports" subtitle="ESG compliance metrics, carbon reduction, and waste audits" />
@@ -11,29 +39,28 @@ export const Reports: React.FC = () => {
       <main style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ margin: 0, fontSize: '18px', color: adminTheme.colors.textPrimary }}>Environmental Impact Summary</h3>
-          <button style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            backgroundColor: adminTheme.colors.primary,
-            color: '#FFFFFF',
-            border: 'none',
-            borderRadius: adminTheme.borderRadius.md,
-            padding: '10px 18px',
-            fontWeight: 700,
-            cursor: 'pointer'
-          }}>
+          <button
+            onClick={handleExportCsv}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: adminTheme.colors.primary,
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: adminTheme.borderRadius.md,
+              padding: '10px 18px',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
             <Download size={18} />
             <span>Export ESG CSV Report</span>
           </button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
-          {[
-            { label: 'CO2 Emissions Avoided', value: '54.2 Tons', note: 'Equivalent to 2,400 trees planted' },
-            { label: 'Landfill Diversion Rate', value: '96.8%', note: 'Exceeding municipal target by 12%' },
-            { label: 'Water Saved', value: '184,000 Liters', note: 'Through paper & glass recycling' }
-          ].map((item, idx) => (
+          {reports.map((item, idx) => (
             <div key={idx} style={{
               backgroundColor: '#FFFFFF',
               borderRadius: adminTheme.borderRadius.lg,

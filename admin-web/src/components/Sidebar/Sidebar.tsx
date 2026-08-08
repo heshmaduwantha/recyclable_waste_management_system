@@ -3,24 +3,27 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Truck, 
+  MapPin,
   Users, 
   UserCheck, 
   Gift, 
   BarChart3, 
   Settings, 
   LogOut,
-  Recycle
+  Recycle,
+  Globe2
 } from 'lucide-react';
 import { adminTheme } from '../../theme/admin';
 
 const navItems = [
-  { label: 'Dashboard', path: '/', icon: LayoutDashboard },
-  { label: 'Pickups Management', path: '/pickups', icon: Truck },
-  { label: 'Pickers', path: '/pickers', icon: UserCheck },
-  { label: 'Customers', path: '/customers', icon: Users },
-  { label: 'Rewards Program', path: '/rewards', icon: Gift },
-  { label: 'Analytics & Reports', path: '/reports', icon: BarChart3 },
-  { label: 'System Settings', path: '/settings', icon: Settings },
+  { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
+  { label: 'Driver Allocation', path: '/admin/allocations', icon: MapPin },
+  { label: 'Pickups Management', path: '/admin/pickups', icon: Truck },
+  { label: 'Pickers Directory', path: '/admin/pickers', icon: UserCheck },
+  { label: 'Customers Directory', path: '/admin/customers', icon: Users },
+  { label: 'Rewards Program', path: '/admin/rewards', icon: Gift },
+  { label: 'Analytics & Reports', path: '/admin/reports', icon: BarChart3 },
+  { label: 'System Settings', path: '/admin/settings', icon: Settings },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -29,7 +32,7 @@ export const Sidebar: React.FC = () => {
   return (
     <aside style={{
       width: '260px',
-      backgroundColor: adminTheme.colors.primary,
+      backgroundColor: '#18181B',
       color: '#FFFFFF',
       display: 'flex',
       flexDirection: 'column',
@@ -38,7 +41,9 @@ export const Sidebar: React.FC = () => {
       left: 0,
       top: 0,
       zIndex: 100,
-      boxShadow: adminTheme.shadows.lg
+      fontFamily: "'Poppins', sans-serif",
+      borderRight: '1.5px solid #18181B',
+      boxShadow: '3px 0px 0px #18181B'
     }}>
       {/* Brand Header */}
       <div style={{
@@ -49,25 +54,55 @@ export const Sidebar: React.FC = () => {
         borderBottom: `1px solid rgba(255, 255, 255, 0.1)`
       }}>
         <div style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '10px',
-          backgroundColor: adminTheme.colors.accent,
+          width: '42px',
+          height: '42px',
+          borderRadius: '12px',
+          backgroundColor: '#22C55E',
+          border: '1.5px solid #18181B',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#FFFFFF'
+          color: '#FFFFFF',
+          boxShadow: '2px 2px 0px #18181B'
         }}>
-          <Recycle size={24} />
+          <Recycle size={26} color="#FFFFFF" />
         </div>
         <div>
-          <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 800, letterSpacing: '-0.5px' }}>EcoCollect</h2>
-          <span style={{ fontSize: '11px', color: adminTheme.colors.accent, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>Admin Dashboard</span>
+          <h2 style={{ margin: 0, fontSize: '19px', fontWeight: 900, letterSpacing: '-0.5px', color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>
+            Eco<span style={{ color: '#22C55E' }}>Collect</span>
+          </h2>
+          <span style={{ fontSize: '10px', color: '#22C55E', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+            Admin Portal
+          </span>
         </div>
       </div>
 
+      {/* Commercial Web Link */}
+      <div style={{ padding: '12px 16px 0 16px' }}>
+        <Link
+          to="/"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 12px',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(34, 197, 94, 0.15)',
+            color: '#22C55E',
+            border: '1px solid rgba(34, 197, 94, 0.3)',
+            textDecoration: 'none',
+            fontSize: '12px',
+            fontWeight: 700,
+            fontFamily: "'Poppins', sans-serif"
+          }}
+        >
+          <Globe2 size={15} />
+          <span>View Commercial Site →</span>
+        </Link>
+      </div>
+
       {/* Navigation Links */}
-      <nav style={{ flex: 1, padding: '20px 12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
@@ -81,16 +116,21 @@ export const Sidebar: React.FC = () => {
                 alignItems: 'center',
                 gap: '12px',
                 padding: '12px 16px',
-                borderRadius: adminTheme.borderRadius.md,
-                color: isActive ? '#FFFFFF' : adminTheme.colors.textMuted,
-                backgroundColor: isActive ? adminTheme.colors.secondary : 'transparent',
+                borderRadius: '12px',
+                color: isActive ? '#22C55E' : '#A1A1AA',
+                backgroundColor: isActive ? 'rgba(34, 197, 94, 0.12)' : 'transparent',
+                borderLeft: isActive ? '4px solid #22C55E' : '4px solid transparent',
+                borderTop: 'none',
+                borderRight: 'none',
+                borderBottom: 'none',
                 textDecoration: 'none',
-                fontWeight: isActive ? 600 : 500,
+                fontWeight: isActive ? 700 : 500,
                 fontSize: '14px',
+                fontFamily: "'Poppins', sans-serif",
                 transition: 'all 0.2s ease'
               }}
             >
-              <Icon size={18} color={isActive ? adminTheme.colors.accent : adminTheme.colors.textMuted} />
+              <Icon size={18} color={isActive ? '#22C55E' : '#71717A'} />
               <span>{item.label}</span>
             </Link>
           );
@@ -109,22 +149,25 @@ export const Sidebar: React.FC = () => {
           <div style={{
             width: '36px',
             height: '36px',
-            borderRadius: '50%',
-            backgroundColor: adminTheme.colors.secondary,
+            borderRadius: '18px',
+            backgroundColor: '#22C55E',
+            border: '1.5px solid #FFFFFF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontWeight: 700,
-            color: '#FFFFFF'
+            fontWeight: 800,
+            color: '#FFFFFF',
+            fontSize: '13px',
+            fontFamily: "'Poppins', sans-serif"
           }}>
             AD
           </div>
           <div>
-            <div style={{ fontSize: '13px', fontWeight: 600 }}>System Admin</div>
-            <div style={{ fontSize: '11px', color: adminTheme.colors.textMuted }}>admin@ecocollect.lk</div>
+            <div style={{ fontSize: '13px', fontWeight: 800, color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>System Admin</div>
+            <div style={{ fontSize: '11px', color: '#A1A1AA' }}>admin@ecocollect.lk</div>
           </div>
         </div>
-        <Link to="/login" title="Logout" style={{ color: adminTheme.colors.textMuted, cursor: 'pointer' }}>
+        <Link to="/login" title="Logout" style={{ color: '#A1A1AA', cursor: 'pointer' }}>
           <LogOut size={18} />
         </Link>
       </div>

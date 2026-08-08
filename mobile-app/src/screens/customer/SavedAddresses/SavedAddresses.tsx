@@ -49,7 +49,7 @@ export const CustomerSavedAddresses: React.FC<{ navigation: any }> = ({ navigati
           </Card>
         ))}
 
-        <Button title="+ Add New Address" onPress={() => {}} style={{ marginTop: 16 }} />
+        <Button title="+ Add New Address" onPress={() => { }} style={{ marginTop: 16 }} />
       </View>
     </ScrollView>
   );

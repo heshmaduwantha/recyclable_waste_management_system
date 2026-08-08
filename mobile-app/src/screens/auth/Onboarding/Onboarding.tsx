@@ -74,7 +74,7 @@ export const Onboarding: React.FC<{ navigation: any }> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Center Soft Mint Graphic Card */}
+      {/* Center Soft Lime Graphic Card */}
       <View style={styles.graphicContainer}>
         {activeSlide.graphic}
       </View>
@@ -98,7 +98,7 @@ export const Onboarding: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Text style={styles.subtitle}>{activeSlide.subtitle}</Text>
       </View>
 
-      {/* Bottom Action Button (Soft Emerald Green) */}
+      {/* Bottom Action Button (Organic Bamboo Green Button) */}
       <TouchableOpacity
         style={styles.actionBtn}
         onPress={handleNext}
@@ -115,7 +115,7 @@ export const Onboarding: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F4FCEB', // Soft Organic Bamboo Eco Cream
     paddingHorizontal: 24,
     paddingTop: 56,
     paddingBottom: 36,
@@ -131,22 +131,27 @@ const styles = StyleSheet.create({
   stepTxt: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#94A3B8'
+    color: '#256D38'
   },
   skipTxt: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#64748B'
+    color: '#18181B'
   },
   graphicContainer: {
     width: '100%',
     height: 280,
-    backgroundColor: '#E8F8F0', // Soft Pastel Mint Background
+    backgroundColor: '#BEF264', // Lime Accent Graphic Box
     borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#D1FAE5'
+    borderWidth: 2,
+    borderColor: '#18181B',
+    shadowColor: '#18181B',
+    shadowOffset: { width: 3, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4
   },
   illustrationBox: {
     alignItems: 'center',
@@ -163,8 +168,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 4,
+    borderWidth: 1.5,
+    borderColor: '#18181B',
     elevation: 3,
-    shadowColor: '#0F172A',
+    shadowColor: '#18181B',
     shadowOpacity: 0.08,
     shadowRadius: 6
   },
@@ -187,8 +194,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: '#A7F3D0',
-    shadowColor: '#0F172A',
+    borderColor: '#18181B',
+    shadowColor: '#18181B',
     shadowOpacity: 0.06,
     shadowRadius: 10,
     elevation: 3
@@ -199,8 +206,8 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 14,
     marginTop: 8,
-    borderWidth: 1,
-    borderColor: '#F59E0B'
+    borderWidth: 1.5,
+    borderColor: '#18181B'
   },
   pointsTagTxt: {
     fontSize: 12,
@@ -218,12 +225,16 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#E2E8F0'
+    backgroundColor: '#D1E8B8',
+    borderWidth: 1,
+    borderColor: '#18181B'
   },
   activeDot: {
     width: 26,
-    backgroundColor: '#10B981', // Soft Emerald Green Active Dot
-    borderRadius: 4
+    backgroundColor: '#256D38', // Deep Bamboo Green Active Dot
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#18181B'
   },
   textSection: {
     alignItems: 'flex-start',
@@ -232,26 +243,29 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#0F172A',
+    color: '#18181B',
     letterSpacing: -0.5,
     marginBottom: 8
   },
   subtitle: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#64748B',
+    fontWeight: '600',
+    color: '#256D38',
+    fontStyle: 'italic',
     lineHeight: 22
   },
   actionBtn: {
-    backgroundColor: '#10B981', // Soft Emerald Green Action Button
+    backgroundColor: '#256D38', // Deep Bamboo Green Action Button
     height: 52,
-    borderRadius: 26,
+    borderRadius: 9999,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
+    borderWidth: 1.5,
+    borderColor: '#18181B',
+    shadowColor: '#18181B',
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
     elevation: 4
   },
   actionBtnTxt: {
@@ -260,5 +274,3 @@ const styles = StyleSheet.create({
     color: '#FFFFFF'
   }
 });
-
-

@@ -6,9 +6,9 @@ interface AuthContextType {
   user: User | null;
   role: UserRole;
   isAuthenticated: boolean;
-  login: (role: UserRole) => void;
+  login: (selectedRole: UserRole, userObj?: User) => void;
   logout: () => void;
-  switchRole: (role: UserRole) => void;
+  switchRole: (selectedRole: UserRole) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -17,12 +17,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<UserRole>('customer');
 
-
-  const login = (selectedRole: UserRole) => {
+  const login = (selectedRole: UserRole, userObj?: User) => {
     setRole(selectedRole);
-    if (selectedRole === 'customer') {
+    if (userObj) {
+      setUser(userObj);
+    } else if (selectedRole === 'customer') {
       setUser(mockCustomerUser);
-    } else if (selectedRole === 'picker') {
+    } else {
       setUser(mockPickerUser);
     }
   };

@@ -6,6 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 
 export const PickerProfile: React.FC = () => {
   const { user, logout, switchRole } = useAuth();
+  const pickerDisplayName = user?.name || 'Suresh Kumar';
+  const pickerInitials = pickerDisplayName
+    .split(' ')
+    .filter(Boolean)
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'SK';
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
@@ -15,11 +23,11 @@ export const PickerProfile: React.FC = () => {
         {/* Sky Blue Collector Hero Card */}
         <View style={styles.profileHeroCard}>
           <View style={styles.avatarWrapper}>
-            <Text style={styles.avatarTxt}>SK</Text>
+            <Text style={styles.avatarTxt}>{pickerInitials}</Text>
             <View style={styles.onlineBadgeDot} />
           </View>
 
-          <Text style={styles.userName}>{user?.name || 'Suresh Kumar'}</Text>
+          <Text style={styles.userName}>{pickerDisplayName}</Text>
           <Text style={styles.roleTitle}>Verified Eco Collector 🚛</Text>
           <Text style={styles.userPhone}>{user?.phone || '+94 71 987 6543'}</Text>
 
@@ -61,8 +69,8 @@ export const PickerProfile: React.FC = () => {
         </View>
 
         <View style={styles.optionsGroup}>
-          <TouchableOpacity 
-            style={styles.optionRow} 
+          <TouchableOpacity
+            style={styles.optionRow}
             onPress={logout}
             activeOpacity={0.8}
           >
@@ -85,7 +93,7 @@ export const PickerProfile: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC'
+    backgroundColor: '#F0F9FF'
   },
   contentContainer: {
     paddingBottom: 40
@@ -94,12 +102,17 @@ const styles = StyleSheet.create({
     padding: 20
   },
   profileHeroCard: {
-    backgroundColor: '#F0F9FF',
+    backgroundColor: '#FFFFFF',
     borderRadius: 26,
     padding: 22,
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: '#BAE6FD',
+    borderColor: '#0F172A',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
     marginBottom: 20
   },
   avatarWrapper: {
@@ -107,8 +120,8 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: 36,
     backgroundColor: '#0284C7',
-    borderWidth: 3,
-    borderColor: '#38BDF8',
+    borderWidth: 2,
+    borderColor: '#0F172A',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -155,14 +168,14 @@ const styles = StyleSheet.create({
     marginTop: 16
   },
   ratingPill: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 9999,
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#F59E0B'
+    borderWidth: 1.5,
+    borderColor: '#0F172A'
   },
   ratingValTxt: {
     fontSize: 13,
@@ -170,15 +183,17 @@ const styles = StyleSheet.create({
     color: '#D97706'
   },
   vehiclePill: {
-    backgroundColor: '#0284C7',
+    backgroundColor: '#E0F2FE',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 20
+    borderRadius: 9999,
+    borderWidth: 1.5,
+    borderColor: '#0F172A'
   },
   vehicleTxt: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#FFFFFF'
+    color: '#0369A1'
   },
   metricsRow: {
     flexDirection: 'row',
@@ -191,13 +206,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 16,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
+    borderWidth: 1.5,
+    borderColor: '#0F172A',
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.08,
     shadowRadius: 6,
-    elevation: 2
+    elevation: 3
   },
   metricVal: {
     fontSize: 18,

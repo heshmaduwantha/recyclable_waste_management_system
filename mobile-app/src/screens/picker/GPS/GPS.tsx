@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Linking, Platform } from 'react-native';
 import { Header } from '../../../common/Header/Header';
 import { Card } from '../../../common/Card/Card';
 import { Button } from '../../../common/Button/Button';
@@ -7,13 +7,13 @@ import { locationService, AddressSearchResult } from '../../../services/location
 import { Ionicons } from '@expo/vector-icons';
 
 export const PickerGPS: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [searchQuery, setSearchQuery] = useState('45 Ward Place, Colombo');
+  const [searchQuery, setSearchQuery] = useState('15/A Havelock Road, Colombo 05');
   const [searchResults, setSearchResults] = useState<AddressSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Simulated Picker & Customer Locations
-  const customerLoc = { latitude: 6.9147, longitude: 79.8653 };
-  const pickerLoc = { latitude: 6.9148, longitude: 79.8654 }; // ~18 meters away
+  // Customer Doorstep & Collector Coordinates
+  const customerLoc = { latitude: 6.8910, longitude: 79.8580 };
+  const pickerLoc = { latitude: 6.8912, longitude: 79.8582 }; // Doorstep vicinity
 
   const proximity = locationService.verifyDoorstepProximity(pickerLoc, customerLoc);
   const etaMinutes = locationService.calculateRouteETA(1.2);
@@ -26,14 +26,47 @@ export const PickerGPS: React.FC<{ navigation: any }> = ({ navigation }) => {
     setIsSearching(false);
   };
 
+  const openGoogleMaps = () => {
+    const lat = customerLoc.latitude;
+    const lng = customerLoc.longitude;
+    const label = encodeURIComponent('Customer Doorstep - Kasun Perera');
+    
+    const googleMapsUrl = Platform.select({
+      ios: `maps:0,0?q=${label}@${lat},${lng}`,
+      android: `geo:0,0?q=${lat},${lng}(${label})`
+    }) || `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+
+    Linking.openURL(googleMapsUrl).catch(() => {
+      Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`);
+    });
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
-      <Header title="GPS & Route Verification" subtitle="Doorstep proximity & Nominatim geocoding" showBack onBackPress={() => navigation.goBack()} />
+      <Header title="Collector GPS Navigation" subtitle="Google Maps doorstep route & location verification" showBack onBackPress={() => navigation.goBack()} />
 
       <View style={styles.body}>
-        {/* OpenStreetMap Address Search Input */}
+        {/* Open Google Maps Hero Action Card */}
+        <Card style={styles.gmapsHeroCard}>
+          <View style={styles.gmapsHeaderRow}>
+            <View style={styles.mapIconCircle}>
+              <Text style={{ fontSize: 26 }}>📍</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.gmapsTitle}>Target Customer Doorstep</Text>
+              <Text style={styles.gmapsAddress}>15/A Havelock Road, Colombo 05</Text>
+            </View>
+          </View>
+
+          <TouchableOpacity style={styles.openMapsBtn} onPress={openGoogleMaps} activeOpacity={0.85}>
+            <Ionicons name="map" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
+            <Text style={styles.openMapsBtnTxt}>Open in Google Maps Navigation 🗺️</Text>
+          </TouchableOpacity>
+        </Card>
+
+        {/* Address Search Input */}
         <Card style={styles.searchCard}>
-          <Text style={styles.searchLabel}>SEARCH ADDRESS (OPENSTREETMAP NOMINATIM)</Text>
+          <Text style={styles.searchLabel}>SEARCH ADDRESS LOCATION</Text>
           <View style={styles.inputRow}>
             <TextInput
               style={styles.input}
@@ -61,15 +94,15 @@ export const PickerGPS: React.FC<{ navigation: any }> = ({ navigation }) => {
           )}
         </Card>
 
-        {/* Haversine Doorstep Proximity Verification Card */}
+        {/* Proximity Verification Card */}
         <View style={styles.proximityCard}>
           <View style={styles.proximityHeaderRow}>
             <View style={styles.gpsIconBg}>
               <Ionicons name="navigate" size={24} color="#0284C7" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.proximityTitle}>Doorstep GPS Verification</Text>
-              <Text style={styles.proximitySub}>Haversine distance: {proximity.distanceMeters} meters away</Text>
+              <Text style={styles.proximityTitle}>Doorstep Proximity Status</Text>
+              <Text style={styles.proximitySub}>Distance: {proximity.distanceMeters} meters away · ETA {etaMinutes} mins</Text>
             </View>
           </View>
 
@@ -79,15 +112,6 @@ export const PickerGPS: React.FC<{ navigation: any }> = ({ navigation }) => {
             </Text>
           </View>
         </View>
-
-        {/* Route Graphic & ETA Card */}
-        <Card style={styles.mapCard}>
-          <View style={styles.mapInner}>
-            <Text style={{ fontSize: 52 }}>🗺️</Text>
-            <Text style={styles.mapTitle}>Route to Customer Location</Text>
-            <Text style={styles.etaTxt}>Estimated Travel Time: {etaMinutes} mins (1.2 km)</Text>
-          </View>
-        </Card>
 
         <Button
           title="Confirm Arrival at Doorstep →"
@@ -101,15 +125,53 @@ export const PickerGPS: React.FC<{ navigation: any }> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8FAFC'
+  container: { flex: 1, backgroundColor: '#F8FAFC' },
+  contentContainer: { paddingBottom: 40 },
+  body: { padding: 20 },
+  gmapsHeroCard: {
+    backgroundColor: '#0F172A',
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 20,
+    elevation: 4
   },
-  contentContainer: {
-    paddingBottom: 40
+  gmapsHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 16
   },
-  body: {
-    padding: 20
+  mapIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#1E293B',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  gmapsTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFFFFF'
+  },
+  gmapsAddress: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#38BDF8',
+    marginTop: 2
+  },
+  openMapsBtn: {
+    backgroundColor: '#0284C7',
+    borderRadius: 16,
+    height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  openMapsBtnTxt: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#FFFFFF'
   },
   searchCard: {
     backgroundColor: '#FFFFFF',
@@ -126,10 +188,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     marginBottom: 8
   },
-  inputRow: {
-    flexDirection: 'row',
-    gap: 8
-  },
+  inputRow: { flexDirection: 'row', gap: 8 },
   input: {
     flex: 1,
     backgroundColor: '#F8FAFC',
@@ -149,28 +208,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  searchingTxt: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#94A3B8',
-    marginTop: 8
-  },
-  resultsList: {
-    marginTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-    paddingTop: 8
-  },
-  resRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8
-  },
-  resTxt: {
-    fontSize: 12,
-    color: '#334155',
-    flex: 1
-  },
+  searchingTxt: { fontSize: 12, fontWeight: '600', color: '#94A3B8', marginTop: 8 },
+  resultsList: { marginTop: 10, borderTopWidth: 1, borderTopColor: '#F1F5F9', paddingTop: 8 },
+  resRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
+  resTxt: { fontSize: 12, color: '#334155', flex: 1 },
   proximityCard: {
     backgroundColor: '#F0F9FF',
     borderRadius: 24,
@@ -179,12 +220,7 @@ const styles = StyleSheet.create({
     borderColor: '#BAE6FD',
     marginBottom: 20
   },
-  proximityHeaderRow: {
-    flexDirection: 'row',
-    gap: 12,
-    alignItems: 'center',
-    marginBottom: 12
-  },
+  proximityHeaderRow: { flexDirection: 'row', gap: 12, alignItems: 'center', marginBottom: 12 },
   gpsIconBg: {
     width: 44,
     height: 44,
@@ -195,65 +231,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#BAE6FD'
   },
-  proximityTitle: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: '#0F172A'
-  },
-  proximitySub: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#0284C7',
-    marginTop: 1
-  },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 14,
-    alignItems: 'center'
-  },
-  badgeSuccess: {
-    backgroundColor: '#ECFDF5',
-    borderWidth: 1,
-    borderColor: '#A7F3D0'
-  },
-  badgeWarning: {
-    backgroundColor: '#FEF3C7',
-    borderWidth: 1,
-    borderColor: '#F59E0B'
-  },
-  statusBadgeTxt: {
-    fontSize: 12,
-    fontWeight: '900'
-  },
-  badgeTxtSuccess: {
-    color: '#059669'
-  },
-  badgeTxtWarning: {
-    color: '#D97706'
-  },
-  mapCard: {
-    backgroundColor: '#ECFDF5',
-    borderRadius: 22,
-    padding: 24,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#A7F3D0'
-  },
-  mapInner: {
-    alignItems: 'center'
-  },
-  mapTitle: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: '#0F172A',
-    marginTop: 8
-  },
-  etaTxt: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#059669',
-    marginTop: 4
-  }
+  proximityTitle: { fontSize: 16, fontWeight: '900', color: '#0F172A' },
+  proximitySub: { fontSize: 12, fontWeight: '600', color: '#0284C7', marginTop: 1 },
+  statusBadge: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 14, alignItems: 'center' },
+  badgeSuccess: { backgroundColor: '#ECFDF5', borderWidth: 1, borderColor: '#A7F3D0' },
+  badgeWarning: { backgroundColor: '#FEF3C7', borderWidth: 1, borderColor: '#F59E0B' },
+  statusBadgeTxt: { fontSize: 12, fontWeight: '900' },
+  badgeTxtSuccess: { color: '#059669' },
+  badgeTxtWarning: { color: '#D97706' }
 });
-

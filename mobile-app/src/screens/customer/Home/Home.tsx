@@ -5,6 +5,14 @@ import { Card } from '../../../common/Card/Card';
 
 export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user, switchRole } = useAuth();
+  const userDisplayName = user?.name || 'Kasun Perera';
+  const initials = userDisplayName
+    .split(' ')
+    .filter(Boolean)
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'KP';
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
@@ -12,11 +20,11 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
       <View style={styles.topHeader}>
         <View style={styles.headerUserRow}>
           <View style={styles.avatarCircle}>
-            <Text style={styles.avatarTxt}>PS</Text>
+            <Text style={styles.avatarTxt}>{initials}</Text>
           </View>
           <View>
             <Text style={styles.greetingSub}>Good Morning 🌿</Text>
-            <Text style={styles.userName}>{user?.name || 'Priya Sharma'}</Text>
+            <Text style={styles.userName}>{userDisplayName}</Text>
           </View>
         </View>
 
@@ -77,7 +85,7 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Text style={styles.scheduleDesc}>
           Your plastic & paper waste collection is scheduled. Please place sorted bins by your doorstep.
         </Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.trackBtn}
           onPress={() => navigation.navigate('CustomerTracking')}
           activeOpacity={0.85}
@@ -114,8 +122,8 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>
 
       <View style={styles.quickGrid}>
-        <TouchableOpacity 
-          style={styles.quickCard} 
+        <TouchableOpacity
+          style={styles.quickCard}
           onPress={() => navigation.navigate('CustomerPickup')}
           activeOpacity={0.8}
         >
@@ -126,8 +134,8 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
           <Text style={styles.quickSub}>Request waste collection</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.quickCard} 
+        <TouchableOpacity
+          style={styles.quickCard}
           onPress={() => navigation.navigate('Wallet')}
           activeOpacity={0.8}
         >
@@ -138,8 +146,8 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
           <Text style={styles.quickSub}>Points & vouchers</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.quickCard} 
+        <TouchableOpacity
+          style={styles.quickCard}
           onPress={() => navigation.navigate('History')}
           activeOpacity={0.8}
         >
@@ -150,8 +158,8 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
           <Text style={styles.quickSub}>Past pickups log</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.quickCard} 
+        <TouchableOpacity
+          style={styles.quickCard}
           onPress={() => navigation.navigate('CustomerRewards')}
           activeOpacity={0.8}
         >
@@ -201,7 +209,7 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC'
+    backgroundColor: '#F4FCEB'
   },
   contentContainer: {
     paddingHorizontal: 20,
@@ -226,7 +234,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     backgroundColor: '#FEF3C7',
     borderWidth: 2,
-    borderColor: '#F59E0B',
+    borderColor: '#18181B',
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -238,12 +246,12 @@ const styles = StyleSheet.create({
   greetingSub: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#64748B'
+    color: '#059669'
   },
   userName: {
     fontSize: 20,
     fontWeight: '900',
-    color: '#0F172A',
+    color: '#18181B',
     letterSpacing: -0.3
   },
   headerActions: {
@@ -256,21 +264,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 18,
-    borderWidth: 1,
-    borderColor: '#E2E8F0'
+    borderWidth: 1.5,
+    borderColor: '#18181B'
   },
   roleSwitchTxt: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#334155'
+    color: '#18181B'
   },
   iconCircleBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderWidth: 1.5,
+    borderColor: '#18181B',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative'
@@ -279,17 +287,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 7,
     right: 7,
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: '#EF4444'
   },
   balanceCard: {
-    backgroundColor: '#ECFDF5', // Soft Mint Emerald Background #ECFDF5
+    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 22,
     borderWidth: 1.5,
-    borderColor: '#A7F3D0',
+    borderColor: '#18181B',
     marginBottom: 24
   },
   balanceHeaderRow: {

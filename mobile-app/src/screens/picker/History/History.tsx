@@ -13,12 +13,12 @@ export const PickerHistory: React.FC = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
-      <Header title="Shift History" subtitle="Completed waste collection log & earnings" />
+      <Header title="Collector Shift History" subtitle="Completed waste collection log & driver earnings" />
 
       <View style={styles.body}>
         {/* Shift Summary Metrics Card */}
         <View style={styles.summaryHeroCard}>
-          <Text style={styles.summaryTitle}>Total Shift Payload</Text>
+          <Text style={styles.summaryTitle}>Total Shift Payload Log</Text>
 
           <View style={styles.metricsRow}>
             <View style={styles.metricCol}>
@@ -36,7 +36,7 @@ export const PickerHistory: React.FC = () => {
             <View style={styles.vDivider} />
 
             <View style={styles.metricCol}>
-              <Text style={[styles.metricVal, { color: '#F59E0B' }]}>LKR 3,305</Text>
+              <Text style={[styles.metricVal, { color: '#D97706' }]}>LKR 3,305</Text>
               <Text style={styles.metricSub}>Commission</Text>
             </View>
           </View>
@@ -46,7 +46,7 @@ export const PickerHistory: React.FC = () => {
         <View style={styles.sectionHeaderRow}>
           <View style={styles.titleGroup}>
             <View style={[styles.titleAccentBar, { backgroundColor: '#0284C7' }]} />
-            <Text style={styles.sectionTitle}>Completed Collections</Text>
+            <Text style={styles.sectionTitle}>Completed Shift Logs</Text>
           </View>
           <Text style={styles.totalCountTxt}>{historyItems.length} records</Text>
         </View>
@@ -63,7 +63,7 @@ export const PickerHistory: React.FC = () => {
                 <View style={styles.idRow}>
                   <Text style={styles.idTxt}>{item.id}</Text>
                   <View style={styles.verifiedPill}>
-                    <Text style={styles.verifiedTxt}>● Completed</Text>
+                    <Text style={styles.verifiedTxt}>● Verified</Text>
                   </View>
                 </View>
                 <Text style={styles.custName}>{item.cust}</Text>
@@ -78,7 +78,7 @@ export const PickerHistory: React.FC = () => {
 
             <View style={styles.cardFooterRow}>
               <Text style={styles.dateTxt}>📅 {item.date} · {item.time}</Text>
-              <Text style={styles.viewDetailTxt}>Details →</Text>
+              <Text style={styles.viewDetailTxt}>Log Details →</Text>
             </View>
           </Card>
         ))}
@@ -90,7 +90,7 @@ export const PickerHistory: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC'
+    backgroundColor: '#F0F9FF' // Soft Ocean Sky Blue for Collector
   },
   contentContainer: {
     paddingBottom: 40
@@ -99,11 +99,16 @@ const styles = StyleSheet.create({
     padding: 20
   },
   summaryHeroCard: {
-    backgroundColor: '#F0F9FF',
+    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 20,
     borderWidth: 1.5,
-    borderColor: '#BAE6FD',
+    borderColor: '#0F172A',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
     marginBottom: 24
   },
   summaryTitle: {
@@ -132,9 +137,9 @@ const styles = StyleSheet.create({
     marginTop: 2
   },
   vDivider: {
-    width: 1,
+    width: 1.5,
     height: 30,
-    backgroundColor: '#BAE6FD'
+    backgroundColor: '#CBD5E1'
   },
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -168,8 +173,13 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     padding: 16,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#F1F5F9'
+    borderWidth: 1.5,
+    borderColor: '#0F172A',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3
   },
   cardTopRow: {
     flexDirection: 'row',
@@ -182,7 +192,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: '#ECFDF5',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#0F172A'
   },
   idRow: {
     flexDirection: 'row',
@@ -192,13 +204,15 @@ const styles = StyleSheet.create({
   idTxt: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#94A3B8'
+    color: '#64748B'
   },
   verifiedPill: {
     backgroundColor: '#ECFDF5',
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 10
+    borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: '#0F172A'
   },
   verifiedTxt: {
     fontSize: 10,
@@ -214,7 +228,7 @@ const styles = StyleSheet.create({
   itemsSub: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#64748B',
+    color: '#334155',
     marginTop: 1
   },
   weightTxt: {
@@ -235,12 +249,12 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F8FAFC'
+    borderTopColor: '#F0F9FF'
   },
   dateTxt: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#94A3B8'
+    color: '#64748B'
   },
   viewDetailTxt: {
     fontSize: 12,
@@ -248,4 +262,3 @@ const styles = StyleSheet.create({
     color: '#0284C7'
   }
 });
-

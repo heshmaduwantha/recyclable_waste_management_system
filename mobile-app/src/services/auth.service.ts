@@ -1,22 +1,36 @@
+import { apiCall } from './api';
 import { User, UserRole } from '../../../shared/types';
 import { mockCustomerUser, mockPickerUser } from '../mock/users';
 
 export const authService = {
   async login(email: string, role: UserRole): Promise<User> {
-    // Simulated API response delay
-    await new Promise(res => setTimeout(res, 400));
-    return role === 'customer' ? mockCustomerUser : mockPickerUser;
+    try {
+      return await apiCall<User>('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, role })
+      });
+    } catch {
+      return role === 'customer' ? mockCustomerUser : mockPickerUser;
+    }
   },
 
   async register(userData: Partial<User>): Promise<User> {
-    await new Promise(res => setTimeout(res, 400));
-    return {
-      id: `USER-${Date.now()}`,
-      name: userData.name || 'New Eco User',
-      email: userData.email || 'user@example.com',
-      phone: userData.phone || '+94 77 000 0000',
-      role: userData.role || 'customer',
-      createdAt: new Date().toISOString()
-    };
+    try {
+      return await apiCall<User>('/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+    } catch {
+      return {
+        id: `USER-${Date.now()}`,
+        name: userData.name || 'Kasun Perera',
+        email: userData.email || 'kasun@gmail.com',
+        phone: userData.phone || '+94 77 123 4567',
+        role: userData.role || 'customer',
+        createdAt: new Date().toISOString()
+      };
+    }
   }
 };

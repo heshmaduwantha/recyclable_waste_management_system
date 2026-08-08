@@ -1,0 +1,15 @@
+{
+  "name": "recyclable-waste-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently -n \"BACKEND,ADMIN-WEB,EXPO-MOBILE\" -c \"cyan.bold,magenta.bold,green.bold\" \"npm --prefix backend run dev\" \"npm --prefix admin-web run dev\" \"npm --prefix mobile-app run start\"",
+    "dev": "concurrently -n \"BACKEND,ADMIN-WEB,EXPO-MOBILE\" -c \"cyan.bold,magenta.bold,green.bold\" \"npm --prefix backend run dev\" \"npm --prefix admin-web run dev\" \"npm --prefix mobile-app run start\"",
+    "start:backend": "npm --prefix backend run dev",
+    "start:admin": "npm --prefix admin-web run dev",
+    "start:mobile": "npm --prefix mobile-app run start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
