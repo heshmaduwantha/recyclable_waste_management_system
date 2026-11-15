@@ -8,7 +8,10 @@
     "start:backend": "npm --prefix backend run dev",
     "start:admin": "npm --prefix admin-web run dev",
     "start:mobile": "npm --prefix mobile-app run start",
-    "start:local": "./scripts/start-local.sh"
+    "start:local": "./scripts/start-local.sh",
+    "emulator:doctor": "node scripts/android-emulator.mjs doctor",
+    "emulator:setup": "node scripts/android-emulator.mjs setup",
+    "emulator:start": "node scripts/android-emulator.mjs start"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

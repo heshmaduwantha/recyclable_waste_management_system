@@ -53,3 +53,7 @@ Integration tests use PostgreSQL and check role isolation, photo requirement, GP
 Use an HTTPS reverse proxy for the API and web, a managed PostgreSQL instance or backed-up PostgreSQL service, persistent photo storage, explicit CORS_ORIGINS and a private JWT secret. Build admin-web with VITE_API_URL pointing to the hosted API if it is on a different origin. Set EXPO_PUBLIC_API_URL before a mobile build. Rate limiting currently applies per API instance; use a shared limiter when horizontally scaling.
 
 Architecture and data flow: docs/architecture.md. The original screens remain in Git history. Generated dependencies and build output are no longer version controlled.
+
+## Android emulator on Mac and Windows
+
+See [lightweight emulator setup](docs/emulator-setup.md). Run `npm run emulator:doctor`, then `npm run emulator:setup`, then `npm run emulator:start`. The installer checks disk space first. Windows double-click launchers are under scripts/.
