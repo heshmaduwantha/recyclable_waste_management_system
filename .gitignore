@@ -27,3 +27,13 @@ npm-debug.log*
 # IDE
 .vscode/
 .idea/
+
+backend/uploads/
+backend/.env
+*.tsbuildinfo
+work/
+mobile-app/dist/
+
+mobile-app/dist-android/
+mobile-app/google-services.json
+mobile-node-modules-old/

@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "EcoCollect",
+    "slug": "ecocollect",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "ecocollect",
+    "android": { "package": "lk.ecocollect.mobile" },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow EcoCollect to verify collection locations."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow EcoCollect to upload collection evidence.",
+          "cameraPermission": "Allow EcoCollect to photograph collected recyclables.",
+          "microphonePermission": false
+        }
+      ],
+      "expo-notifications"
+    ],
+    "web": { "bundler": "metro" }
+  }
+}
