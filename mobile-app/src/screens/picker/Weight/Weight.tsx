@@ -2,21 +2,48 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { Button } from '../../../common/Button/Button';
 import { usePickup } from '../../../store/pickup/PickupContext';
+import { useAuth } from '../../../store/auth/AuthContext';
+import { pickerService, CompleteResult, formatLkr } from '../../../services/picker.service';
 
 export const PickerWeight: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const { updateStatus } = usePickup();
-  const [actualWeight, setActualWeight] = useState('2.8');
-  const [isCompleted, setIsCompleted] = useState(false);
+  const { activeJob, setActiveJob } = usePickup();
+  const { user } = useAuth();
+  const [actualWeight, setActualWeight] = useState(activeJob ? String(activeJob.totalEstimatedWeight) : '');
+  const [result, setResult] = useState<CompleteResult | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [completedId, setCompletedId] = useState<string | null>(null);
 
-  const handleComplete = () => {
-    updateStatus('PU-8821', 'completed', Number(actualWeight));
-    setIsCompleted(true);
+  // Live estimate of points using the job's per-category rates (server recalculates on submit)
+  const estPtsPerKg = activeJob ? activeJob.estimatedPoints / activeJob.totalEstimatedWeight : 0;
+  const weightNum = parseFloat(actualWeight) || 0;
+
+  const handleComplete = async () => {
+    if (!activeJob) {
+      setError('No active job selected. Accept a job from the Home screen first.');
+      return;
+    }
+    if (!(weightNum > 0)) {
+      setError('Enter a weight greater than 0 kg.');
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await pickerService.complete(activeJob.id, weightNum);
+      setCompletedId(activeJob.id);
+      setResult(res);
+      setActiveJob(null);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  if (isCompleted) {
+  if (result) {
     return (
       <View style={styles.completeContainer}>
-        {/* Centered Graphic with Green Checkmark */}
         <View style={styles.graphicBox}>
           <View style={styles.outerRing}>
             <View style={styles.innerRing}>
@@ -25,39 +52,32 @@ export const PickerWeight: React.FC<{ navigation: any }> = ({ navigation }) => {
               </View>
             </View>
           </View>
-
-          {/* Floating Stars/Dots */}
           <Text style={[styles.starDot, { top: 10, right: 30 }]}>⭐</Text>
           <Text style={[styles.starDot, { bottom: 20, left: 20 }]}>⭐</Text>
           <View style={[styles.colorDot, { top: 30, left: 35, backgroundColor: '#F59E0B' }]} />
           <View style={[styles.colorDot, { bottom: 35, right: 35, backgroundColor: '#38BDF8' }]} />
         </View>
 
-        {/* Title & Subtitle */}
         <Text style={styles.completeTitle}>Collection Complete!</Text>
-        <Text style={styles.completeSub}>Great work, Suresh! 🌟</Text>
+        <Text style={styles.completeSub}>Great work, {user?.name?.split(' ')[0]}! 🌟 ({completedId})</Text>
 
-        {/* Soft Blue Summary Card */}
         <View style={styles.summaryCard}>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Weight Collected</Text>
-            <Text style={styles.summaryDarkVal}>{actualWeight} kg</Text>
+            <Text style={styles.summaryDarkVal}>{result.actualWeightKg} kg</Text>
           </View>
           <View style={styles.dividerLine} />
-
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Customer Earned</Text>
-            <Text style={styles.summaryGreenVal}>+{(parseFloat(actualWeight) * 50).toFixed(0)} pts</Text>
+            <Text style={styles.summaryGreenVal}>+{result.earnedPoints} pts</Text>
           </View>
           <View style={styles.dividerLine} />
-
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Your Commission</Text>
-            <Text style={styles.summaryBlueVal}>LKR {(parseFloat(actualWeight) * 30.3).toFixed(0)}</Text>
+            <Text style={styles.summaryBlueVal}>{formatLkr(result.commissionLkr)}</Text>
           </View>
         </View>
 
-        {/* Back to Dashboard Sky Blue Button */}
         <Button
           title="Back to Dashboard"
           onPress={() => navigation.navigate('PickerHomeMain')}
@@ -71,12 +91,14 @@ export const PickerWeight: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 20 }}>
       <Text style={styles.stepTitle}>Doorstep Weight Measure</Text>
-      <Text style={styles.stepSub}>Verify collected weight using digital scale</Text>
+      <Text style={styles.stepSub}>
+        {activeJob ? `${activeJob.id} · ${activeJob.customerName} · declared ~${activeJob.totalEstimatedWeight} kg` : 'No active job — accept one from Home first'}
+      </Text>
 
       <View style={styles.scaleDisplay}>
-        <Text style={styles.scaleLabel}>BLUETOOTH SCALE CONNECTED</Text>
-        <Text style={styles.scaleVal}>{actualWeight} KG</Text>
-        <Text style={styles.scaleSub}>Points to Credit: {(parseFloat(actualWeight) * 50).toFixed(0)} PTS</Text>
+        <Text style={styles.scaleLabel}>VERIFIED WEIGHT</Text>
+        <Text style={styles.scaleVal}>{weightNum || 0} KG</Text>
+        <Text style={styles.scaleSub}>Points to Credit: ~{Math.round(weightNum * estPtsPerKg)} PTS</Text>
       </View>
 
       <View style={styles.inputCard}>
@@ -89,16 +111,17 @@ export const PickerWeight: React.FC<{ navigation: any }> = ({ navigation }) => {
         />
       </View>
 
-      <TouchableOpacity
-        style={styles.camBtn}
-        onPress={() => navigation.navigate('PickerCamera')}
-      >
+      <TouchableOpacity style={styles.camBtn} onPress={() => navigation.navigate('PickerCamera')}>
         <Text style={styles.camTxt}>📸 Take Doorstep Verification Photo</Text>
       </TouchableOpacity>
+
+      {error && <Text style={{ color: '#DC2626', fontWeight: '600', marginTop: 12 }}>⚠️ {error}</Text>}
 
       <Button
         title="Complete Collection & Submit"
         onPress={handleComplete}
+        loading={submitting}
+        disabled={submitting || !activeJob}
         themeRole="picker"
         style={{ marginTop: 20 }}
       />

@@ -6,6 +6,9 @@ import { pickupService } from '../../services/pickup.service';
 import { pickerService, AdminPickerData } from '../../services/picker.service';
 import { PickupRequest } from '../../../../shared/types';
 import { apiCall } from '../../services/api';
+import { customerService, AdminCustomerData } from '../../services/customer.service';
+
+const tomorrowIso = () => new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
 export const Pickups: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
@@ -14,8 +17,10 @@ export const Pickups: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Form State
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
+  const [customers, setCustomers] = useState<AdminCustomerData[]>([]);
+  const [customerId, setCustomerId] = useState('');
+  const [scheduledDate, setScheduledDate] = useState(tomorrowIso());
+  const [formError, setFormError] = useState<string | null>(null);
   const [category, setCategory] = useState('plastic');
   const [weightKg, setWeightKg] = useState<number>(10);
   const [street, setStreet] = useState('');
@@ -30,16 +35,21 @@ export const Pickups: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     async function loadData() {
-      const [pickupList, pickerList] = await Promise.all([
-        pickupService.getPickups(),
-        pickerService.getPickers()
-      ]);
-      if (isMounted) {
-        setPickups(pickupList);
-        setPickers(pickerList);
+      try {
+        const [pickupList, pickerList] = await Promise.all([
+          pickupService.getPickups(),
+          pickerService.getPickers()
+        ]);
+        if (isMounted) {
+          setPickups(pickupList);
+          setPickers(pickerList);
+        }
+      } catch (err) {
+        console.error('Failed to load pickups:', err);
       }
     }
     loadData();
+    customerService.getCustomers().then(list => isMounted && setCustomers(list)).catch(err => console.error(err));
 
     // Auto-poll for new mobile app pickup requests every 5s
     const timer = setInterval(() => {
@@ -57,24 +67,20 @@ export const Pickups: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          customerName: customerName || 'Kasun Perera',
-          customerPhone: customerPhone || '+94 77 123 4567',
-          items: [{ category, estimatedWeightKg: weightKg, pricePerKg: 120 }],
-          totalEstimatedWeight: weightKg,
-          estimatedPoints: weightKg * 20,
-          scheduledDate: '2026-08-07',
+          customerId,
+          items: [{ category, estimatedWeightKg: weightKg }],
+          scheduledDate,
           scheduledTimeSlot: '10:00 AM - 12:00 PM',
-          address: { street: street || '15/A Havelock Road', city: city || 'Colombo 05' }
+          address: street ? { street, city } : undefined
         })
       });
       setPickups([newPickup, ...pickups]);
       setIsModalOpen(false);
-      setCustomerName('');
-      setCustomerPhone('');
+      setFormError(null);
       setStreet('');
       setCity('');
     } catch (err) {
-      console.warn('Create pickup error:', err);
+      setFormError((err as Error).message);
     } finally {
       setSubmitting(false);
     }
@@ -101,7 +107,7 @@ export const Pickups: React.FC = () => {
             ...p,
             pickerId: chosenPicker?.id,
             pickerName: chosenPicker?.name,
-            status: 'in_progress',
+            status: 'assigned',
             pickerStatus: 'assigned',
             rejectionReason: null
           };
@@ -321,12 +327,15 @@ export const Pickups: React.FC = () => {
 
             <form onSubmit={handleCreatePickup} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <label style={{ fontSize: '12px', fontWeight: 700 }}>Customer Name</label>
-                <input required value={customerName} onChange={e => setCustomerName(e.target.value)} placeholder="e.g. Kasun Perera" style={{ width: '100%', padding: '10px', marginTop: '4px', borderRadius: '8px', border: `1px solid ${adminTheme.colors.border}` }} />
+                <label style={{ fontSize: '12px', fontWeight: 700 }}>Customer</label>
+                <select required value={customerId} onChange={e => setCustomerId(e.target.value)} style={{ width: '100%', padding: '10px', marginTop: '4px', borderRadius: '8px', border: `1px solid ${adminTheme.colors.border}` }}>
+                  <option value="">Select a registered customer…</option>
+                  {customers.map(c => <option key={c.id} value={c.id}>{c.name} · {c.phone}</option>)}
+                </select>
               </div>
               <div>
-                <label style={{ fontSize: '12px', fontWeight: 700 }}>Customer Phone</label>
-                <input required value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} placeholder="+94 77 123 4567" style={{ width: '100%', padding: '10px', marginTop: '4px', borderRadius: '8px', border: `1px solid ${adminTheme.colors.border}` }} />
+                <label style={{ fontSize: '12px', fontWeight: 700 }}>Scheduled Date</label>
+                <input required type="date" min={tomorrowIso()} value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} style={{ width: '100%', padding: '10px', marginTop: '4px', borderRadius: '8px', border: `1px solid ${adminTheme.colors.border}` }} />
               </div>
               <div>
                 <label style={{ fontSize: '12px', fontWeight: 700 }}>Material Category</label>
@@ -336,6 +345,7 @@ export const Pickups: React.FC = () => {
                   <option value="glass">Glass Bottles & Jars</option>
                   <option value="metal">Metal & Steel Scrap</option>
                   <option value="e-waste">E-Waste & Electronics</option>
+                  <option value="polythene">Polythene & Soft Plastics</option>
                 </select>
               </div>
               <div>
@@ -343,14 +353,15 @@ export const Pickups: React.FC = () => {
                 <input required type="number" value={weightKg} onChange={e => setWeightKg(parseFloat(e.target.value) || 0)} style={{ width: '100%', padding: '10px', marginTop: '4px', borderRadius: '8px', border: `1px solid ${adminTheme.colors.border}` }} />
               </div>
               <div>
-                <label style={{ fontSize: '12px', fontWeight: 700 }}>Street Address</label>
-                <input required value={street} onChange={e => setStreet(e.target.value)} placeholder="e.g. 15/A Havelock Road" style={{ width: '100%', padding: '10px', marginTop: '4px', borderRadius: '8px', border: `1px solid ${adminTheme.colors.border}` }} />
+                <label style={{ fontSize: '12px', fontWeight: 700 }}>Street Address (optional — defaults to customer's home)</label>
+                <input value={street} onChange={e => setStreet(e.target.value)} placeholder="e.g. 15/A Havelock Road" style={{ width: '100%', padding: '10px', marginTop: '4px', borderRadius: '8px', border: `1px solid ${adminTheme.colors.border}` }} />
               </div>
               <div>
                 <label style={{ fontSize: '12px', fontWeight: 700 }}>City</label>
-                <input required value={city} onChange={e => setCity(e.target.value)} placeholder="e.g. Colombo 05" style={{ width: '100%', padding: '10px', marginTop: '4px', borderRadius: '8px', border: `1px solid ${adminTheme.colors.border}` }} />
+                <input required={!!street} value={city} onChange={e => setCity(e.target.value)} placeholder="e.g. Colombo 05" style={{ width: '100%', padding: '10px', marginTop: '4px', borderRadius: '8px', border: `1px solid ${adminTheme.colors.border}` }} />
               </div>
 
+              {formError && <div role="alert" style={{ color: '#DC2626', fontSize: '13px', fontWeight: 600 }}>⚠️ {formError}</div>}
               <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
                 <button type="button" onClick={() => setIsModalOpen(false)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: `1px solid ${adminTheme.colors.border}`, backgroundColor: '#F8FAFC', fontWeight: 700, cursor: 'pointer' }}>Cancel</button>
                 <button type="submit" disabled={submitting} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: adminTheme.colors.accent, color: '#FFFFFF', fontWeight: 700, cursor: 'pointer' }}>{submitting ? 'Saving...' : 'Create Pickup Request'}</button>

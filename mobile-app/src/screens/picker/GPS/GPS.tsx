@@ -5,15 +5,19 @@ import { Card } from '../../../common/Card/Card';
 import { Button } from '../../../common/Button/Button';
 import { locationService, AddressSearchResult } from '../../../services/location.service';
 import { Ionicons } from '@expo/vector-icons';
+import { usePickup } from '../../../store/pickup/PickupContext';
 
 export const PickerGPS: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [searchQuery, setSearchQuery] = useState('15/A Havelock Road, Colombo 05');
+  const { activeJob } = usePickup();
+  const jobAddress = activeJob ? `${activeJob.address.street}, ${activeJob.address.city}` : '';
+  const [searchQuery, setSearchQuery] = useState(jobAddress);
   const [searchResults, setSearchResults] = useState<AddressSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
   // Customer Doorstep & Collector Coordinates
-  const customerLoc = { latitude: 6.8910, longitude: 79.8580 };
-  const pickerLoc = { latitude: 6.8912, longitude: 79.8582 }; // Doorstep vicinity
+  const customerLoc = { latitude: Number(activeJob?.address.latitude) || 6.9271, longitude: Number(activeJob?.address.longitude) || 79.8612 };
+  // Device GPS is not wired up yet; simulate the collector standing at the doorstep.
+  const pickerLoc = { latitude: customerLoc.latitude + 0.0002, longitude: customerLoc.longitude + 0.0002 };
 
   const proximity = locationService.verifyDoorstepProximity(pickerLoc, customerLoc);
   const etaMinutes = locationService.calculateRouteETA(1.2);
@@ -29,7 +33,7 @@ export const PickerGPS: React.FC<{ navigation: any }> = ({ navigation }) => {
   const openGoogleMaps = () => {
     const lat = customerLoc.latitude;
     const lng = customerLoc.longitude;
-    const label = encodeURIComponent('Customer Doorstep - Kasun Perera');
+    const label = encodeURIComponent(`Customer Doorstep - ${activeJob?.customerName || ''}`);
     
     const googleMapsUrl = Platform.select({
       ios: `maps:0,0?q=${label}@${lat},${lng}`,
@@ -54,7 +58,7 @@ export const PickerGPS: React.FC<{ navigation: any }> = ({ navigation }) => {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.gmapsTitle}>Target Customer Doorstep</Text>
-              <Text style={styles.gmapsAddress}>15/A Havelock Road, Colombo 05</Text>
+              <Text style={styles.gmapsAddress}>{activeJob ? `${activeJob.id} · ${activeJob.customerName}\n${jobAddress}` : 'No active job — accept a job from Home first.'}</Text>
             </View>
           </View>
 
@@ -116,6 +120,7 @@ export const PickerGPS: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Button
           title="Confirm Arrival at Doorstep →"
           onPress={() => navigation.navigate('PickerWeight')}
+          disabled={!activeJob}
           themeRole="picker"
           style={{ marginTop: 8 }}
         />

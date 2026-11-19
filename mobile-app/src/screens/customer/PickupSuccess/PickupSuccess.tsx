@@ -2,8 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Button } from '../../../common/Button/Button';
 import { Ionicons } from '@expo/vector-icons';
+import { usePickup } from '../../../store/pickup/PickupContext';
 
 export const CustomerPickupSuccess: React.FC<{ navigation: any; route: any }> = ({ navigation }) => {
+  const { lastCreated } = usePickup();
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -12,26 +14,26 @@ export const CustomerPickupSuccess: React.FC<{ navigation: any; route: any }> = 
         </View>
 
         <Text style={styles.title}>Pickup Confirmed!</Text>
-        <Text style={styles.refCode}>Ref: PU-1049</Text>
+        <Text style={styles.refCode}>Ref: {lastCreated?.id}</Text>
 
         <Text style={styles.subtitle}>
-          Your recyclable waste pickup has been successfully scheduled. A certified collector will arrive at your doorstep during your requested time window.
+          Your recyclable waste pickup has been scheduled ({lastCreated?.totalEstimatedWeight} kg, ~{lastCreated?.estimatedPoints} Eco Points). We'll notify you as soon as a collector is assigned.
         </Text>
 
         <View style={styles.infoBox}>
           <Text style={styles.infoBoxTitle}>📅 Scheduled Time</Text>
-          <Text style={styles.infoBoxVal}>Tomorrow, 08:00 AM - 10:00 AM</Text>
+          <Text style={styles.infoBoxVal}>{lastCreated?.scheduledDate}, {lastCreated?.scheduledTimeSlot}</Text>
         </View>
 
         <Button
           title="Track Pickup Status →"
-          onPress={() => navigation.navigate('CustomerTracking')}
+          onPress={() => navigation.navigate('PickupDetails', { pickupId: lastCreated?.id })}
           style={{ width: '100%', marginTop: 20 }}
         />
 
         <Button
           title="Back to Home"
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate('HomeMain')}
           variant="outline"
           style={{ width: '100%', marginTop: 10 }}
         />

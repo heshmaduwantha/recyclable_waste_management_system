@@ -1,11 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Header } from '../../../common/Header/Header';
 import { Card } from '../../../common/Card/Card';
-import { mockPickupsList } from '../../../mock/pickups';
 import { Ionicons } from '@expo/vector-icons';
+import { useApiData } from '../../../hooks/useApiData';
+import { pickupService } from '../../../services/pickup.service';
+import { customerService } from '../../../services/customer.service';
+import { useAuth } from '../../../store/auth/AuthContext';
 
-export const CustomerHistory: React.FC = () => {
+const STATUS_COLOR: Record<string, string> = { completed: '#10B981', cancelled: '#EF4444', pending: '#F59E0B', assigned: '#0284C7', in_progress: '#8B5CF6' };
+
+export const CustomerHistory: React.FC<{ navigation?: any }> = ({ navigation }) => {
+  const { user } = useAuth();
+  const { data, error } = useApiData(() => Promise.all([pickupService.fetchPickups(), customerService.walletStats(), customerService.profile()]), [user?.id]);
+  const [pickups, stats, profile] = data || [[], null, null];
+  const completedCount = pickups.filter((p) => p.status === 'completed').length;
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
       <Header title="Recycling History" subtitle="Archive of past pickup requests & eco rewards" greenTheme />
@@ -17,21 +26,21 @@ export const CustomerHistory: React.FC = () => {
 
           <View style={styles.metricsRow}>
             <View style={styles.metricCol}>
-              <Text style={[styles.metricVal, { color: '#10B981' }]}>43.4 kg</Text>
+              <Text style={[styles.metricVal, { color: '#10B981' }]}>{profile?.recycledKg ?? 0} kg</Text>
               <Text style={styles.metricSub}>Recycled</Text>
             </View>
 
             <View style={styles.vDivider} />
 
             <View style={styles.metricCol}>
-              <Text style={[styles.metricVal, { color: '#0284C7' }]}>8</Text>
+              <Text style={[styles.metricVal, { color: '#0284C7' }]}>{completedCount}</Text>
               <Text style={styles.metricSub}>Pickups</Text>
             </View>
 
             <View style={styles.vDivider} />
 
             <View style={styles.metricCol}>
-              <Text style={[styles.metricVal, { color: '#D97706' }]}>+2,450</Text>
+              <Text style={[styles.metricVal, { color: '#D97706' }]}>+{(stats?.totalEarned ?? 0).toLocaleString()}</Text>
               <Text style={styles.metricSub}>Eco Points</Text>
             </View>
           </View>
@@ -43,12 +52,15 @@ export const CustomerHistory: React.FC = () => {
             <View style={[styles.titleAccentBar, { backgroundColor: '#10B981' }]} />
             <Text style={styles.sectionTitle}>Past Pickup Log</Text>
           </View>
-          <Text style={styles.totalCountTxt}>{mockPickupsList.length} completed</Text>
+          <Text style={styles.totalCountTxt}>{pickups.length} requests</Text>
         </View>
 
         {/* Pickup Request History Cards */}
-        {mockPickupsList.map((pickup, idx) => (
-          <Card key={pickup.id || idx} style={styles.historyCard}>
+        {error && <Text style={{ color: '#DC2626' }}>⚠️ {error}</Text>}
+        {pickups.length === 0 && !error && <Text style={{ color: '#64748B', textAlign: 'center' }}>No pickups yet.</Text>}
+        {pickups.map((pickup, idx) => (
+          <TouchableOpacity key={pickup.id || idx} activeOpacity={0.85} onPress={() => navigation?.navigate('PickupDetails', { pickupId: pickup.id })}>
+          <Card style={styles.historyCard}>
             <View style={styles.cardTopRow}>
               <View style={styles.iconBg}>
                 <Ionicons name="leaf-outline" size={22} color="#10B981" />
@@ -58,7 +70,7 @@ export const CustomerHistory: React.FC = () => {
                 <View style={styles.idRow}>
                   <Text style={styles.idTxt}>{pickup.id}</Text>
                   <View style={styles.statusPill}>
-                    <Text style={styles.statusTxt}>● {pickup.status}</Text>
+                    <Text style={[styles.statusTxt, { color: STATUS_COLOR[pickup.status] }]}>● {pickup.status.replace('_', ' ')}</Text>
                   </View>
                 </View>
                 <Text style={styles.addressTxt}>{pickup.address.street}, {pickup.address.city}</Text>
@@ -66,11 +78,12 @@ export const CustomerHistory: React.FC = () => {
               </View>
 
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.weightTxt}>{pickup.totalEstimatedWeight} kg</Text>
-                <Text style={styles.pointsTxt}>+{pickup.earnedPoints || pickup.estimatedPoints} pts</Text>
+                <Text style={styles.weightTxt}>{pickup.status === 'completed' ? pickup.totalActualWeight : pickup.totalEstimatedWeight} kg</Text>
+                <Text style={styles.pointsTxt}>{pickup.status === 'completed' ? `+${pickup.earnedPoints} pts` : pickup.status === 'cancelled' ? '—' : `~${pickup.estimatedPoints} pts`}</Text>
               </View>
             </View>
           </Card>
+          </TouchableOpacity>
         ))}
       </View>
     </ScrollView>

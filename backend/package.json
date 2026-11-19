@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "db:migrate": "tsx src/db/setup.ts migrate",
+    "db:seed": "tsx src/db/setup.ts seed",
+    "db:setup": "tsx src/db/setup.ts all",
+    "test:api": "node tests/api.qa.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

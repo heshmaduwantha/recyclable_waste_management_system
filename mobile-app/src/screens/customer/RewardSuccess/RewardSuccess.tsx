@@ -3,7 +3,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Button } from '../../../common/Button/Button';
 import { Ionicons } from '@expo/vector-icons';
 
-export const CustomerRewardSuccess: React.FC<{ navigation: any }> = ({ navigation }) => {
+export const CustomerRewardSuccess: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
+  const { redemptionId, rewardTitle, mobileNumber, newBalance } = route?.params || {};
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -11,17 +12,16 @@ export const CustomerRewardSuccess: React.FC<{ navigation: any }> = ({ navigatio
           <Ionicons name="phone-portrait" size={54} color="#10B981" />
         </View>
 
-        <Text style={styles.title}>Mobile Reload Sent! 📱</Text>
-        <Text style={styles.rewardTitle}>Dialog / Mobitel Airtime Top-Up</Text>
+        <Text style={styles.title}>Reward Redeemed! 📱</Text>
+        <Text style={styles.rewardTitle}>{rewardTitle}</Text>
 
-        {/* Promo Code / Transaction Box */}
         <View style={styles.codeCard}>
           <Text style={styles.codeLabel}>TRANSACTION REFERENCE</Text>
-          <Text style={styles.codeTxt}>TXN-RLD-8820</Text>
-          <Text style={styles.codeSub}>Airtime credited to 077 123 4567</Text>
+          <Text style={styles.codeTxt}>{redemptionId}</Text>
+          <Text style={styles.codeSub}>Sent to {mobileNumber}</Text>
         </View>
 
-        <Text style={styles.validityTxt}>Processed via EcoCollect Rewards API</Text>
+        <Text style={styles.validityTxt}>Remaining balance: {(newBalance ?? 0).toLocaleString()} pts</Text>
 
         <Button
           title="View in Eco Wallet →"
@@ -39,7 +39,6 @@ export const CustomerRewardSuccess: React.FC<{ navigation: any }> = ({ navigatio
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

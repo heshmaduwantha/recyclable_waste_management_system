@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { useAuth } from '../../../store/auth/AuthContext';
 import { Card } from '../../../common/Card/Card';
-import { apiCall } from '../../../services/api';
+import { pickerService, PickerJob, PickerStats } from '../../../services/picker.service';
+import { usePickup } from '../../../store/pickup/PickupContext';
 
 export const PickerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user } = useAuth();
-  const [jobs, setJobs] = useState<any[]>([]);
+  const { setActiveJob } = usePickup();
+  const [jobs, setJobs] = useState<PickerJob[]>([]);
+  const [stats, setStats] = useState<PickerStats | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -27,13 +31,12 @@ export const PickerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
   async function loadJobs(silent = false) {
     if (!silent) setLoading(true);
     try {
-      const data = await apiCall<any[]>('/picker/jobs');
+      const [data, s] = await Promise.all([pickerService.jobs(), pickerService.stats()]);
       setJobs(data);
-    } catch {
-      setJobs([
-        { id: 'ECO#048', customer: 'Amali Fernando', customerPhone: '+94 77 999 8888', address: '45 Ward Place, Col 07', details: 'Plastic, Glass · ~3 kg · 1.2 km', status: 'Assigned' },
-        { id: 'ECO#049', customer: 'Kasun Perera', customerPhone: '+94 77 123 4567', address: '78 Duplication Rd, Col 03', details: 'Paper, Metal · ~5 kg · 2.4 km', status: 'Assigned' }
-      ]);
+      setStats(s);
+      setLoadError(null);
+    } catch (e) {
+      setLoadError((e as Error).message);
     } finally {
       if (!silent) setLoading(false);
       setRefreshing(false);
@@ -45,14 +48,19 @@ export const PickerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
     loadJobs();
   };
 
-  const handleAccept = async (jobId: string) => {
+  const handleAccept = async (job: PickerJob) => {
     try {
-      await apiCall(`/picker/jobs/${jobId}/accept`, { method: 'PUT' });
-      setJobs(jobs.map(j => j.id === jobId ? { ...j, status: 'Accepted' } : j));
+      if (job.jobStatus !== 'Accepted') {
+        await pickerService.accept(job.id);
+      }
+      const accepted = { ...job, jobStatus: 'Accepted' as const, pickerStatus: 'accepted' };
+      setJobs(jobs.map(j => j.id === job.id ? accepted : j));
+      setActiveJob(accepted);
+      navigation.navigate('PickerGPS');
     } catch (err) {
-      setJobs(jobs.map(j => j.id === jobId ? { ...j, status: 'Accepted' } : j));
+      Alert.alert('Could not accept job', (err as Error).message);
+      loadJobs(true);
     }
-    navigation.navigate('PickerGPS');
   };
 
   const openRejectModal = (jobId: string) => {
@@ -64,29 +72,28 @@ export const PickerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
     if (!rejectModalJobId) return;
     setSubmittingReject(true);
     try {
-      await apiCall(`/picker/jobs/${rejectModalJobId}/reject`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason: rejectionReason || 'Capacity full / Route constraint' })
-      });
+      if (!rejectionReason.trim()) {
+        Alert.alert('Reason required', 'Please tell the admin why you are rejecting this job.');
+        return;
+      }
+      await pickerService.reject(rejectModalJobId, rejectionReason.trim());
       setJobs(jobs.filter(j => j.id !== rejectModalJobId));
       setRejectModalJobId(null);
     } catch (err) {
-      setJobs(jobs.filter(j => j.id !== rejectModalJobId));
-      setRejectModalJobId(null);
+      Alert.alert('Could not reject job', (err as Error).message);
     } finally {
       setSubmittingReject(false);
     }
   };
 
-  const pickerDisplayName = user?.name || 'Suresh Kumar';
+  const pickerDisplayName = user?.name || '';
   const pickerInitials = pickerDisplayName
     .split(' ')
     .filter(Boolean)
     .map((n: string) => n[0])
     .join('')
     .toUpperCase()
-    .slice(0, 2) || 'SK';
+    .slice(0, 2);
 
   return (
     <ScrollView
@@ -118,7 +125,7 @@ export const PickerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
             <View style={styles.liveGreenDot} />
             <Text style={styles.statusLiveTxt}>Active · On Duty</Text>
           </View>
-          <Text style={styles.statusTimeTxt}>08:45 AM</Text>
+          <Text style={styles.statusTimeTxt}>{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</Text>
         </View>
 
         {/* 4 Stat Metrics Cards Overlapping Header */}
@@ -129,17 +136,17 @@ export const PickerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
           </View>
 
           <View style={styles.metricCard}>
-            <Text style={[styles.metricNum, { color: '#10B981' }]}>2</Text>
+            <Text style={[styles.metricNum, { color: '#10B981' }]}>{stats?.today.jobs ?? 0}</Text>
             <Text style={styles.metricLabel}>Done</Text>
           </View>
 
           <View style={styles.metricCard}>
-            <Text style={[styles.metricNum, { color: '#F59E0B' }]}>{jobs.filter(j => j.status !== 'Accepted').length}</Text>
+            <Text style={[styles.metricNum, { color: '#F59E0B' }]}>{jobs.filter(j => j.jobStatus !== 'Accepted').length}</Text>
             <Text style={styles.metricLabel}>Pending</Text>
           </View>
 
           <View style={styles.metricCard}>
-            <Text style={[styles.metricNum, { color: '#8B5CF6' }]}>4.9<Text style={{ fontSize: 13, color: '#F59E0B' }}>⭐</Text></Text>
+            <Text style={[styles.metricNum, { color: '#8B5CF6' }]}>{stats?.rating ?? '—'}<Text style={{ fontSize: 13, color: '#F59E0B' }}>⭐</Text></Text>
             <Text style={styles.metricLabel}>Rating</Text>
           </View>
         </View>
@@ -177,13 +184,15 @@ export const PickerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
         </View>
 
         {/* Job Cards List */}
+        {loadError && <Text style={{ color: '#DC2626', marginBottom: 8 }}>⚠️ {loadError}</Text>}
+        {!loading && !loadError && jobs.length === 0 && <Text style={{ color: '#64748B', textAlign: 'center' }}>No jobs allocated right now. Pull to refresh.</Text>}
         {jobs.map((job) => (
           <Card key={job.id} style={styles.jobCard}>
             <View style={styles.jobTopRow}>
               <Text style={styles.jobIdTxt}>{job.id}</Text>
-              <View style={[styles.pendingBadge, job.status === 'Accepted' && { backgroundColor: '#ECFDF5' }]}>
-                <Text style={[styles.pendingBadgeTxt, job.status === 'Accepted' && { color: '#059669' }]}>
-                  {job.status}
+              <View style={[styles.pendingBadge, job.jobStatus === 'Accepted' && { backgroundColor: '#ECFDF5' }]}>
+                <Text style={[styles.pendingBadgeTxt, job.jobStatus === 'Accepted' && { color: '#059669' }]}>
+                  {job.jobStatus}
                 </Text>
               </View>
             </View>
@@ -192,7 +201,7 @@ export const PickerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
 
             <View style={styles.addressRow}>
               <Text style={{ fontSize: 14, marginRight: 6 }}>📍</Text>
-              <Text style={styles.addressTxt}>{job.address}</Text>
+              <Text style={styles.addressTxt}>{job.addressText}</Text>
             </View>
 
             <Text style={styles.detailsTxt}>{job.details}</Text>
@@ -201,13 +210,13 @@ export const PickerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
             <View style={styles.actionButtonsRow}>
               <TouchableOpacity
                 style={styles.acceptBtn}
-                onPress={() => handleAccept(job.id)}
+                onPress={() => handleAccept(job)}
                 activeOpacity={0.85}
               >
-                <Text style={styles.acceptBtnTxt}>{job.status === 'Accepted' ? 'View GPS Route 🗺️' : 'Accept Job ✅'}</Text>
+                <Text style={styles.acceptBtnTxt}>{job.jobStatus === 'Accepted' ? 'View GPS Route 🗺️' : 'Accept Job ✅'}</Text>
               </TouchableOpacity>
 
-              {job.status !== 'Accepted' && (
+              {job.jobStatus !== 'Accepted' && (
                 <TouchableOpacity
                   style={styles.rejectBtn}
                   onPress={() => openRejectModal(job.id)}

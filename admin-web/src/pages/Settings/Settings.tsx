@@ -58,7 +58,9 @@ export const Settings: React.FC = () => {
       ]);
       setMaterials(mRates);
       setBadges(bList);
-    } catch (err) {}
+    } catch (err) {
+      console.error('Failed to load settings:', err);
+    }
   }
 
   // Add New Material Category
@@ -81,7 +83,7 @@ export const Settings: React.FC = () => {
       setNewCatName('');
       setNewCatKey('');
     } catch (err) {
-      console.warn(err);
+      alert(`Could not add material: ${(err as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -106,7 +108,7 @@ export const Settings: React.FC = () => {
       setBadgeName('');
       setBadgeDesc('');
     } catch (err) {
-      console.warn(err);
+      alert(`Could not add badge: ${(err as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -117,7 +119,7 @@ export const Settings: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await apiCall('/admin/notifications', {
+      const sent = await apiCall<{ recipients: number }>('/admin/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -125,12 +127,12 @@ export const Settings: React.FC = () => {
           message: notifMessage
         })
       });
-      setNotifSentStatus('Notification broadcasted to all mobile app users!');
+      setNotifSentStatus(`Notification broadcast to ${sent.recipients} customers!`);
       setNotifTitle('');
       setNotifMessage('');
       setTimeout(() => setNotifSentStatus(null), 4000);
     } catch (err) {
-      console.warn(err);
+      alert(`Could not send notification: ${(err as Error).message}`);
     } finally {
       setLoading(false);
     }

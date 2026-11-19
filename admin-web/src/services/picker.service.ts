@@ -1,22 +1,15 @@
 import { apiCall } from './api';
 import { User } from '../../../shared/types';
-import { mockPickers } from '../mock/data';
 
 export interface AdminPickerData extends User {
   jobsDone: number;
+  activeJobs?: number;
   rating: number;
+  vehicleNumber?: string;
+  vehicleType?: string;
+  isActive?: boolean;
 }
 
 export const pickerService = {
-  async getPickers(): Promise<AdminPickerData[]> {
-    try {
-      return await apiCall<AdminPickerData[]>('/admin/pickers');
-    } catch {
-      return mockPickers.map((p) => ({
-        ...p,
-        jobsDone: 128,
-        rating: 4.9
-      }));
-    }
-  }
+  getPickers: () => apiCall<AdminPickerData[]>('/admin/pickers'),
 };

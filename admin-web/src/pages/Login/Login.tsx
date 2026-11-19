@@ -2,15 +2,32 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminTheme } from '../../theme/admin';
 import { Recycle, Lock, Mail, ArrowRight } from 'lucide-react';
+import { apiCall } from '../../services/api';
+import { adminSession } from '../../services/session';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('admin@ecocollect.lk');
-  const [password, setPassword] = useState('password123');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/');
+    setSubmitting(true);
+    setError(null);
+    try {
+      const u = await apiCall<{ id: string; name: string; email: string; token: string }>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password, role: 'admin' })
+      });
+      adminSession.set({ id: u.id, name: u.name, email: u.email, token: u.token });
+      navigate('/admin');
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -86,7 +103,8 @@ export const Login: React.FC = () => {
           </div>
         </div>
 
-        <button type="submit" style={{
+        {error && <div role="alert" style={{ color: '#DC2626', fontSize: '13px', fontWeight: 600 }}>⚠️ {error}</div>}
+        <button type="submit" disabled={submitting} style={{
           marginTop: '8px',
           backgroundColor: adminTheme.colors.primary,
           color: '#FFFFFF',

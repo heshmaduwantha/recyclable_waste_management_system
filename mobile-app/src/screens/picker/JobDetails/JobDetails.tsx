@@ -4,8 +4,12 @@ import { Header } from '../../../common/Header/Header';
 import { Card } from '../../../common/Card/Card';
 import { Button } from '../../../common/Button/Button';
 import { Ionicons } from '@expo/vector-icons';
+import { Linking } from 'react-native';
+import { usePickup } from '../../../store/pickup/PickupContext';
 
 export const PickerJobDetails: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { activeJob } = usePickup();
+  const initials = (activeJob?.customerName || '').split(' ').filter(Boolean).map((n) => n[0]).join('').slice(0, 2);
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
       <Header title="Job Specification" subtitle="Verification & doorstep collection details" showBack onBackPress={() => navigation.goBack()} />
@@ -15,20 +19,20 @@ export const PickerJobDetails: React.FC<{ navigation: any }> = ({ navigation }) 
         <View style={styles.customerCard}>
           <View style={styles.customerTopRow}>
             <View style={styles.avatarCircle}>
-              <Text style={styles.avatarTxt}>KP</Text>
+              <Text style={styles.avatarTxt}>{initials}</Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.customerName}>Kasun Perera</Text>
-              <Text style={styles.phoneTxt}>+94 77 123 4567</Text>
+              <Text style={styles.customerName}>{activeJob?.customerName || 'No active job'}</Text>
+              <Text style={styles.phoneTxt}>{activeJob?.customerPhone}</Text>
             </View>
-            <TouchableOpacity style={styles.callBtn}>
+            <TouchableOpacity style={styles.callBtn} onPress={() => activeJob?.customerPhone && Linking.openURL(`tel:${activeJob.customerPhone.replace(/\s/g, '')}`)}>
               <Ionicons name="call" size={18} color="#0284C7" />
             </TouchableOpacity>
           </View>
 
           <View style={styles.addressBox}>
             <Ionicons name="location" size={18} color="#0284C7" style={{ marginRight: 8 }} />
-            <Text style={styles.addressTxt}>15/A Havelock Road, Colombo 05 (1.2 km away)</Text>
+            <Text style={styles.addressTxt}>{activeJob?.addressText}</Text>
           </View>
         </View>
 
@@ -41,10 +45,9 @@ export const PickerJobDetails: React.FC<{ navigation: any }> = ({ navigation }) 
         </View>
 
         <Card style={styles.itemsCard}>
-          {[
-            { category: 'Plastic (PET Bottles)', est: '10.0 kg', rate: 'LKR 120/kg', icon: '🧴' },
-            { category: 'Paper & Cardboard', est: '5.0 kg', rate: 'LKR 60/kg', icon: '📰' }
-          ].map((item, idx) => (
+          {(activeJob?.items || []).map((it) => ({
+            category: it.category.charAt(0).toUpperCase() + it.category.slice(1), est: `${it.estimatedWeightKg} kg`, rate: `LKR ${it.pricePerKg}/kg`, icon: '♻️'
+          })).map((item, idx) => (
             <View key={idx} style={styles.itemRow}>
               <Text style={{ fontSize: 24, marginRight: 10 }}>{item.icon}</Text>
               <View style={{ flex: 1 }}>

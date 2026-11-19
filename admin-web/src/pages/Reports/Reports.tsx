@@ -10,9 +10,11 @@ export const Reports: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     async function loadReports() {
-      const data = await adminService.getReports();
-      if (isMounted) {
-        setReports(data);
+      try {
+        const data = await adminService.getReports();
+        if (isMounted) setReports(data);
+      } catch (err) {
+        console.error('Failed to load reports:', err);
       }
     }
     loadReports();

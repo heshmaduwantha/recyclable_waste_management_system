@@ -3,17 +3,20 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { Header } from '../../../common/Header/Header';
 import { useAuth } from '../../../store/auth/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
+import { useApiData } from '../../../hooks/useApiData';
+import { pickerService } from '../../../services/picker.service';
 
 export const PickerProfile: React.FC = () => {
-  const { user, logout, switchRole } = useAuth();
-  const pickerDisplayName = user?.name || 'Suresh Kumar';
+  const { user, logout } = useAuth();
+  const { data: stats } = useApiData(pickerService.stats, [user?.id]);
+  const pickerDisplayName = user?.name || '';
   const pickerInitials = pickerDisplayName
     .split(' ')
     .filter(Boolean)
     .map((n: string) => n[0])
     .join('')
     .toUpperCase()
-    .slice(0, 2) || 'SK';
+    .slice(0, 2);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
@@ -29,17 +32,17 @@ export const PickerProfile: React.FC = () => {
 
           <Text style={styles.userName}>{pickerDisplayName}</Text>
           <Text style={styles.roleTitle}>Verified Eco Collector 🚛</Text>
-          <Text style={styles.userPhone}>{user?.phone || '+94 71 987 6543'}</Text>
+          <Text style={styles.userPhone}>{user?.phone}</Text>
 
           {/* Rating & Badge Row */}
           <View style={styles.badgeRow}>
             <View style={styles.ratingPill}>
               <Text style={{ fontSize: 14, marginRight: 4 }}>⭐</Text>
-              <Text style={styles.ratingValTxt}>4.9 Rating</Text>
+              <Text style={styles.ratingValTxt}>{stats?.rating ?? '—'} Rating</Text>
             </View>
 
             <View style={styles.vehiclePill}>
-              <Text style={styles.vehicleTxt}>Truck WP-5842</Text>
+              <Text style={styles.vehicleTxt}>{stats?.vehicleType} {stats?.vehicleNumber}</Text>
             </View>
           </View>
         </View>
@@ -47,17 +50,17 @@ export const PickerProfile: React.FC = () => {
         {/* 3 Metrics Row */}
         <View style={styles.metricsRow}>
           <View style={styles.metricCard}>
-            <Text style={[styles.metricVal, { color: '#0284C7' }]}>48</Text>
+            <Text style={[styles.metricVal, { color: '#0284C7' }]}>{stats?.totalJobsDone ?? 0}</Text>
             <Text style={styles.metricLabel}>Done</Text>
           </View>
 
           <View style={styles.metricCard}>
-            <Text style={[styles.metricVal, { color: '#10B981' }]}>142 kg</Text>
+            <Text style={[styles.metricVal, { color: '#10B981' }]}>{Math.round(stats?.totalKg ?? 0)} kg</Text>
             <Text style={styles.metricLabel}>Collected</Text>
           </View>
 
           <View style={styles.metricCard}>
-            <Text style={[styles.metricVal, { color: '#F59E0B' }]}>98%</Text>
+            <Text style={[styles.metricVal, { color: '#F59E0B' }]}>{stats?.onTimeRate ?? 0}%</Text>
             <Text style={styles.metricLabel}>On Time</Text>
           </View>
         </View>

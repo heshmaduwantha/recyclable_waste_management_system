@@ -3,13 +3,21 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Header } from '../../../common/Header/Header';
 import { Card } from '../../../common/Card/Card';
 import { Ionicons } from '@expo/vector-icons';
+import { useApiData } from '../../../hooks/useApiData';
+import { pickerService, formatLkr } from '../../../services/picker.service';
 
 export const PickerHistory: React.FC = () => {
-  const historyItems = [
-    { id: 'PU-8820', cust: 'Kasun Perera', weight: '32 kg', items: 'Plastic, Glass', payout: 'LKR 1,120', date: 'Aug 02, 2026', time: '10:30 AM' },
-    { id: 'PU-8815', cust: 'Dilini Fernando', weight: '21 kg', items: 'Paper, Metal', payout: 'LKR 735', date: 'Aug 01, 2026', time: '02:15 PM' },
-    { id: 'PU-8809', cust: 'Saman Kumara', weight: '18.5 kg', items: 'E-Waste, Glass', payout: 'LKR 1,450', date: 'Jul 29, 2026', time: '11:00 AM' }
-  ];
+  const { data, error } = useApiData(() => Promise.all([pickerService.history(), pickerService.stats()]), []);
+  const [history, stats] = data || [[], null];
+  const historyItems = history.map((h) => {
+    const d = new Date(h.completedAt || h.createdAt);
+    return {
+      id: h.id, cust: h.customerName, weight: `${h.totalActualWeight} kg`, items: h.categories,
+      payout: formatLkr(h.pickerCommissionLkr),
+      date: d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+      time: d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    };
+  });
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
@@ -18,25 +26,25 @@ export const PickerHistory: React.FC = () => {
       <View style={styles.body}>
         {/* Shift Summary Metrics Card */}
         <View style={styles.summaryHeroCard}>
-          <Text style={styles.summaryTitle}>Total Shift Payload Log</Text>
+          <Text style={styles.summaryTitle}>Lifetime Collection Log</Text>
 
           <View style={styles.metricsRow}>
             <View style={styles.metricCol}>
-              <Text style={[styles.metricVal, { color: '#0284C7' }]}>71.5 kg</Text>
+              <Text style={[styles.metricVal, { color: '#0284C7' }]}>{stats?.totalKg ?? 0} kg</Text>
               <Text style={styles.metricSub}>Collected</Text>
             </View>
 
             <View style={styles.vDivider} />
 
             <View style={styles.metricCol}>
-              <Text style={[styles.metricVal, { color: '#10B981' }]}>3</Text>
+              <Text style={[styles.metricVal, { color: '#10B981' }]}>{stats?.totalJobsDone ?? 0}</Text>
               <Text style={styles.metricSub}>Pickups</Text>
             </View>
 
             <View style={styles.vDivider} />
 
             <View style={styles.metricCol}>
-              <Text style={[styles.metricVal, { color: '#D97706' }]}>LKR 3,305</Text>
+              <Text style={[styles.metricVal, { color: '#D97706' }]}>{formatLkr(stats?.totalEarningsLkr ?? 0)}</Text>
               <Text style={styles.metricSub}>Commission</Text>
             </View>
           </View>
@@ -52,6 +60,7 @@ export const PickerHistory: React.FC = () => {
         </View>
 
         {/* History List Cards */}
+        {error && <Text style={{ color: '#DC2626' }}>⚠️ {error}</Text>}
         {historyItems.map((item, idx) => (
           <Card key={idx} style={styles.historyCard}>
             <View style={styles.cardTopRow}>

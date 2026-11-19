@@ -2,11 +2,14 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { PickupRequest } from '../../../../shared/types';
 import { pickupService } from '../../services/pickup.service';
 import { useAuth } from '../auth/AuthContext';
+import { PickerJob } from '../../services/picker.service';
 
 interface PickupContextType {
   pickups: PickupRequest[];
-  createPickup: (pickup: Partial<PickupRequest>) => Promise<void>;
-  updateStatus: (pickupId: string, status: PickupRequest['status'], actualWeight?: number) => void;
+  lastCreated: PickupRequest | null;
+  activeJob: PickerJob | null;
+  setActiveJob: (job: PickerJob | null) => void;
+  createPickup: (pickup: Partial<PickupRequest>) => Promise<PickupRequest>;
   refreshPickups: () => Promise<void>;
 }
 
@@ -15,51 +18,32 @@ const PickupContext = createContext<PickupContextType | undefined>(undefined);
 export const PickupProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [pickups, setPickups] = useState<PickupRequest[]>([]);
+  const [lastCreated, setLastCreated] = useState<PickupRequest | null>(null);
+  const [activeJob, setActiveJob] = useState<PickerJob | null>(null);
 
   useEffect(() => {
-    refreshPickups();
-  }, []);
+    setPickups([]);
+    setActiveJob(null);
+    if (user) refreshPickups();
+  }, [user?.id]);
 
   const refreshPickups = async () => {
     try {
-      const data = await pickupService.fetchPickups();
-      setPickups(data);
+      setPickups(await pickupService.fetchPickups());
     } catch (err) {
-      console.warn('Failed to load pickups:', err);
+      console.warn('Failed to load pickups:', (err as Error).message);
     }
   };
 
   const createPickup = async (newPickupData: Partial<PickupRequest>) => {
-    const customerName = user?.name || 'Kasun Perera';
-    const customerPhone = user?.phone || '+94 77 123 4567';
-
-    const payload = {
-      ...newPickupData,
-      customerName,
-      customerPhone
-    };
-
-    const created = await pickupService.requestPickup(payload);
-    setPickups(prev => [created, ...prev]);
-  };
-
-  const updateStatus = (pickupId: string, status: PickupRequest['status'], actualWeight?: number) => {
-    setPickups(prev => prev.map(item => {
-      if (item.id === pickupId) {
-        return {
-          ...item,
-          status,
-          totalActualWeight: actualWeight || item.totalEstimatedWeight,
-          earnedPoints: (actualWeight || item.totalEstimatedWeight) * 20,
-          completedAt: status === 'completed' ? new Date().toISOString() : item.completedAt
-        };
-      }
-      return item;
-    }));
+    const created = await pickupService.requestPickup(newPickupData);
+    setPickups((prev) => [created, ...prev]);
+    setLastCreated(created);
+    return created;
   };
 
   return (
-    <PickupContext.Provider value={{ pickups, createPickup, updateStatus, refreshPickups }}>
+    <PickupContext.Provider value={{ pickups, lastCreated, activeJob, setActiveJob, createPickup, refreshPickups }}>
       {children}
     </PickupContext.Provider>
   );

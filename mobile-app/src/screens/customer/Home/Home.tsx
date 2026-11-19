@@ -1,21 +1,42 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useAuth } from '../../../store/auth/AuthContext';
 import { Card } from '../../../common/Card/Card';
+import { useApiData } from '../../../hooks/useApiData';
+import { customerService } from '../../../services/customer.service';
+
+const greeting = () => {
+  const h = new Date().getHours();
+  return h < 12 ? 'Good Morning 🌿' : h < 17 ? 'Good Afternoon ☀️' : 'Good Evening 🌙';
+};
+const fmt = (n?: number) => (n ?? 0).toLocaleString();
+const scheduleLabel = (date: string, slot: string) => {
+  const d = new Date(`${date}T00:00:00`);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const diff = Math.round((d.getTime() - today.getTime()) / 86400000);
+  const day = diff === 0 ? 'Today' : diff === 1 ? 'Tomorrow' : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  return `${day}, ${slot.split(' - ')[0]}`;
+};
 
 export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const { user, switchRole } = useAuth();
-  const userDisplayName = user?.name || 'Kasun Perera';
+  const { user } = useAuth();
+  const { data: dash, error, reload } = useApiData(customerService.dashboard, [user?.id]);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = async () => { setRefreshing(true); await reload(); setRefreshing(false); };
+  const userDisplayName = dash?.user.name || user?.name || '';
+  const next = dash?.nextPickup;
+  const nextCats = next ? next.items.map((i) => i.category).join(' & ') : '';
   const initials = userDisplayName
     .split(' ')
     .filter(Boolean)
     .map((n: string) => n[0])
     .join('')
     .toUpperCase()
-    .slice(0, 2) || 'KP';
+    .slice(0, 2);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+      {error && <Text style={{ color: '#DC2626', padding: 12 }}>⚠️ {error}</Text>}
       {/* Top Header Bar (Clean White / Soft Background) */}
       <View style={styles.topHeader}>
         <View style={styles.headerUserRow}>
@@ -23,7 +44,7 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
             <Text style={styles.avatarTxt}>{initials}</Text>
           </View>
           <View>
-            <Text style={styles.greetingSub}>Good Morning 🌿</Text>
+            <Text style={styles.greetingSub}>{greeting()}</Text>
             <Text style={styles.userName}>{userDisplayName}</Text>
           </View>
         </View>
@@ -31,7 +52,7 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.iconCircleBtn} onPress={() => navigation.navigate('Notification')}>
             <Text style={{ fontSize: 16 }}>🔔</Text>
-            <View style={styles.notifBadgeDot} />
+            {!!dash?.unreadNotifications && <View style={styles.notifBadgeDot} />}
           </TouchableOpacity>
         </View>
 
@@ -42,11 +63,11 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
         <View style={styles.balanceHeaderRow}>
           <View style={{ flex: 1 }}>
             <View style={styles.badgePill}>
-              <Text style={styles.badgePillTxt}>🎗️ Green Warrior</Text>
+              <Text style={styles.badgePillTxt}>{dash?.tier.badgePillTxt || '…'}</Text>
             </View>
             <Text style={styles.balanceLabel}>Eco Points Balance</Text>
             <View style={styles.valRow}>
-              <Text style={styles.balanceVal}>2,450</Text>
+              <Text style={styles.balanceVal}>{fmt(dash?.wallet.totalPoints)}</Text>
               <Text style={styles.ptsUnit}>pts</Text>
             </View>
           </View>
@@ -59,11 +80,11 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
         {/* Progress Bar */}
         <View style={styles.progressSection}>
           <View style={styles.progressTextRow}>
-            <Text style={styles.progressLabel}>Next: Recycling Master</Text>
-            <Text style={styles.progressVal}>2,450 / 3,000 pts</Text>
+            <Text style={styles.progressLabel}>Next: {dash?.tier.nextTierName}</Text>
+            <Text style={styles.progressVal}>{fmt(dash?.wallet.totalEarned)} / {fmt(dash?.tier.targetPoints)} pts</Text>
           </View>
           <View style={styles.trackBg}>
-            <View style={[styles.trackFill, { width: '81.6%' }]} />
+            <View style={[styles.trackFill, { width: `${dash?.tier.percentage ?? 0}%` }]} />
           </View>
         </View>
       </Card>
@@ -75,24 +96,33 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Confirmed Schedule</Text>
         </View>
       </View>
+      {!next ? (
+        <Card style={styles.scheduleCard}>
+          <Text style={styles.scheduleDesc}>No upcoming pickups. Schedule one to start earning Eco Points!</Text>
+          <TouchableOpacity style={styles.trackBtn} onPress={() => navigation.navigate('CustomerPickup')} activeOpacity={0.85}>
+            <Text style={styles.trackBtnTxt}>🚛 Schedule a Pickup</Text>
+          </TouchableOpacity>
+        </Card>
+      ) : (
       <Card style={styles.scheduleCard}>
         <View style={styles.scheduleTopRow}>
           <View style={styles.confirmedPill}>
-            <Text style={styles.confirmedPillTxt}>● Confirmed</Text>
+            <Text style={styles.confirmedPillTxt}>● {next.status === 'pending' ? 'Awaiting collector' : next.status === 'in_progress' ? 'Collector en route' : 'Confirmed'}</Text>
           </View>
-          <Text style={styles.scheduleTime}>Tomorrow, 8:00 AM</Text>
+          <Text style={styles.scheduleTime}>{scheduleLabel(next.scheduledDate, next.scheduledTimeSlot)}</Text>
         </View>
         <Text style={styles.scheduleDesc}>
-          Your plastic & paper waste collection is scheduled. Please place sorted bins by your doorstep.
+          {next.id}: your {nextCats} collection (~{next.totalEstimatedWeight} kg){next.pickerName ? ` with ${next.pickerName}` : ''}. Please place sorted bins by your doorstep.
         </Text>
         <TouchableOpacity
           style={styles.trackBtn}
-          onPress={() => navigation.navigate('CustomerTracking')}
+          onPress={() => navigation.navigate('PickupDetails', { pickupId: next.id })}
           activeOpacity={0.85}
         >
-          <Text style={styles.trackBtnTxt}>📍 Track Collector Live</Text>
+          <Text style={styles.trackBtnTxt}>📍 View Pickup Status</Text>
         </TouchableOpacity>
       </Card>
+      )}
 
       {/* AI Waste Scanner Hero Banner */}
       <TouchableOpacity
@@ -178,27 +208,27 @@ export const CustomerHome: React.FC<{ navigation: any }> = ({ navigation }) => {
           <View style={[styles.titleAccentBar, { backgroundColor: '#F59E0B' }]} />
           <Text style={styles.sectionTitle}>Monthly Activity</Text>
         </View>
-        <Text style={styles.monthBadge}>Aug 2026</Text>
+        <Text style={styles.monthBadge}>{dash?.monthly.label}</Text>
       </View>
 
 
       <Card style={styles.monthlyCard}>
         <View style={styles.statCol}>
-          <Text style={styles.statVal}>12.4 kg</Text>
+          <Text style={styles.statVal}>{dash?.monthly.weightKg ?? 0} kg</Text>
           <Text style={styles.statLabel}>Total Weight</Text>
         </View>
 
         <View style={styles.vDivider} />
 
         <View style={styles.statCol}>
-          <Text style={styles.statVal}>8</Text>
+          <Text style={styles.statVal}>{dash?.monthly.completed ?? 0}</Text>
           <Text style={styles.statLabel}>Completed</Text>
         </View>
 
         <View style={styles.vDivider} />
 
         <View style={styles.statCol}>
-          <Text style={[styles.statVal, { color: '#10B981' }]}>+620</Text>
+          <Text style={[styles.statVal, { color: '#10B981' }]}>+{fmt(dash?.monthly.pointsEarned)}</Text>
           <Text style={styles.statLabel}>Points Earned</Text>
         </View>
       </Card>

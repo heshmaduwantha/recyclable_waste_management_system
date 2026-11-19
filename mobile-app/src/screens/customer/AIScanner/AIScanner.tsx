@@ -48,7 +48,7 @@ export const AIScanner: React.FC<{ navigation: any }> = ({ navigation }) => {
     setIsScanning(true);
     try {
       const selectedCat = categoryOverride || 'Plastic';
-      const detection = aiWasteDetectionService.getMaterialForCategory(selectedCat);
+      const detection = await aiWasteDetectionService.getMaterialForCategory(selectedCat);
       setResult(detection);
     } catch (error) {
       console.error(error);
@@ -57,9 +57,12 @@ export const AIScanner: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
-  const handleCategoryChange = (cat: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste') => {
-    const updated = aiWasteDetectionService.getMaterialForCategory(cat);
-    setResult(updated);
+  const handleCategoryChange = async (cat: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste') => {
+    try {
+      setResult(await aiWasteDetectionService.getMaterialForCategory(cat));
+    } catch (e) {
+      alert((e as Error).message);
+    }
   };
 
   const handleWeightChange = (delta: number) => {

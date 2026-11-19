@@ -14,6 +14,7 @@ import {
   Globe2
 } from 'lucide-react';
 import { adminTheme } from '../../theme/admin';
+import { adminSession } from '../../services/session';
 
 const navItems = [
   { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
@@ -163,11 +164,11 @@ export const Sidebar: React.FC = () => {
             AD
           </div>
           <div>
-            <div style={{ fontSize: '13px', fontWeight: 800, color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>System Admin</div>
-            <div style={{ fontSize: '11px', color: '#A1A1AA' }}>admin@ecocollect.lk</div>
+            <div style={{ fontSize: '13px', fontWeight: 800, color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>{adminSession.get()?.name || 'System Admin'}</div>
+            <div style={{ fontSize: '11px', color: '#A1A1AA' }}>{adminSession.get()?.email}</div>
           </div>
         </div>
-        <Link to="/login" title="Logout" style={{ color: '#A1A1AA', cursor: 'pointer' }}>
+        <Link to="/login" title="Logout" onClick={() => adminSession.clear()} style={{ color: '#A1A1AA', cursor: 'pointer' }}>
           <LogOut size={18} />
         </Link>
       </div>

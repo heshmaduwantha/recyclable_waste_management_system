@@ -26,6 +26,7 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     async function loadDashboardData() {
+      try {
       const [statsData, chartList, fleet, pickupsList, pickersList] = await Promise.all([
         adminService.getDashboardStats(),
         adminService.getMonthlyChartData(),
@@ -39,6 +40,9 @@ export const Dashboard: React.FC = () => {
         setFleetStatus(fleet);
         setRecentPickups(pickupsList);
         setPickers(pickersList);
+      }
+      } catch (err) {
+        console.error('Failed to load dashboard:', err);
       }
     }
     loadDashboardData();
@@ -61,14 +65,14 @@ export const Dashboard: React.FC = () => {
 
       setRecentPickups(recentPickups.map(p => {
         if (p.id === (selectedPickupId || recentPickups[0]?.id)) {
-          return { ...p, pickerId: chosenPicker?.id, pickerName: chosenPicker?.name, status: 'in_progress' };
+          return { ...p, pickerId: chosenPicker?.id, pickerName: chosenPicker?.name, status: 'assigned' };
         }
         return p;
       }));
 
       setIsAssignModalOpen(false);
     } catch (err) {
-      console.warn('Assign driver error:', err);
+      alert(`Assign driver failed: ${(err as Error).message}`);
     } finally {
       setSubmittingAssign(false);
     }

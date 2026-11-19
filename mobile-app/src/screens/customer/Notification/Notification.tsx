@@ -18,6 +18,7 @@ export const CustomerNotification: React.FC = () => {
     try {
       const data = await notificationService.getNotifications();
       setNotifications(data);
+      if (data.some((n) => !n.isRead)) notificationService.markAllRead().catch(() => undefined);
     } catch (err) {
       console.warn('Failed to load notifications:', err);
     } finally {

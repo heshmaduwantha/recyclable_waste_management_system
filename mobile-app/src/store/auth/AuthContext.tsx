@@ -1,50 +1,43 @@
-import React, { createContext, useContext, useState } from 'react';
-import { User, UserRole } from '../../../../shared/types';
-import { mockCustomerUser, mockPickerUser } from '../../mock/users';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { UserRole } from '../../../../shared/types';
+import { AuthUser } from '../../services/auth.service';
+import { session } from '../../services/session';
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   role: UserRole;
   isAuthenticated: boolean;
-  login: (selectedRole: UserRole, userObj?: User) => void;
+  login: (selectedRole: UserRole, userObj: AuthUser) => void;
+  updateUser: (patch: Partial<AuthUser>) => void;
   logout: () => void;
-  switchRole: (selectedRole: UserRole) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [role, setRole] = useState<UserRole>('customer');
 
-  const login = (selectedRole: UserRole, userObj?: User) => {
+  const login = (selectedRole: UserRole, userObj: AuthUser) => {
+    session.set(userObj.id, userObj.token);
     setRole(selectedRole);
-    if (userObj) {
-      setUser(userObj);
-    } else if (selectedRole === 'customer') {
-      setUser(mockCustomerUser);
-    } else {
-      setUser(mockPickerUser);
-    }
+    setUser(userObj);
   };
 
-  const switchRole = (selectedRole: UserRole) => {
-    login(selectedRole);
-  };
+  const updateUser = (patch: Partial<AuthUser>) => setUser((u) => (u ? { ...u, ...patch } : u));
 
   const logout = () => {
+    session.set(null);
     setUser(null);
   };
 
+  useEffect(() => {
+    session.onExpired(() => setUser(null));
+    return () => session.onExpired(null);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{
-      user,
-      role,
-      isAuthenticated: !!user,
-      login,
-      logout,
-      switchRole
-    }}>
+    <AuthContext.Provider value={{ user, role, isAuthenticated: !!user, login, updateUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

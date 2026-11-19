@@ -4,6 +4,17 @@ import { Header } from '../../../common/Header/Header';
 import { Button } from '../../../common/Button/Button';
 import { usePickup } from '../../../store/pickup/PickupContext';
 import { WasteCategory } from '../../../../../shared/types';
+import { useApiData } from '../../../hooks/useApiData';
+import { customerService } from '../../../services/customer.service';
+import { useAuth } from '../../../store/auth/AuthContext';
+
+const SLOTS = ['08:00 AM - 10:00 AM', '10:00 AM - 12:00 PM', '02:00 PM - 04:00 PM', '04:00 PM - 06:00 PM'];
+const isoDay = (offset: number) => {
+  const d = new Date(Date.now() + offset * 86400000);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+const dayLabel = (offset: number) =>
+  offset === 1 ? 'Tomorrow' : new Date(Date.now() + offset * 86400000).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
 interface MaterialDef {
   id: WasteCategory;
@@ -15,21 +26,24 @@ interface MaterialDef {
 
 export const CustomerPickup: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
   const { createPickup } = usePickup();
-
-  const materials: MaterialDef[] = [
-    { id: 'plastic', label: 'Plastic', icon: '🧴', unitPrice: 120, ptsPerKg: 50 },
-    { id: 'glass', label: 'Glass', icon: '🫙', unitPrice: 40, ptsPerKg: 20 },
-    { id: 'metal', label: 'Metal', icon: '🥫', unitPrice: 250, ptsPerKg: 100 },
-    { id: 'polythene', label: 'Polythene', icon: '🛍️', unitPrice: 80, ptsPerKg: 30 },
-    { id: 'paper', label: 'Paper', icon: '📰', unitPrice: 60, ptsPerKg: 25 },
-    { id: 'e-waste', label: 'E-Waste', icon: '💻', unitPrice: 400, ptsPerKg: 200 }
-  ];
+  const { user } = useAuth();
+  const { data } = useApiData(() => Promise.all([customerService.materialRates(), customerService.addresses()]), [user?.id]);
+  const [rates, addresses] = data || [[], []];
+  const materials: MaterialDef[] = rates.map((r) => ({
+    id: r.category as WasteCategory,
+    label: r.category === 'e-waste' ? 'E-Waste' : r.category.charAt(0).toUpperCase() + r.category.slice(1),
+    icon: r.icon,
+    unitPrice: r.pricePerKgLkr,
+    ptsPerKg: r.pointsPerKg
+  }));
 
   // Map of category -> weight in kg
-  const [itemWeights, setItemWeights] = useState<{ [key in WasteCategory]?: number }>({
-    plastic: 2.0,
-    paper: 1.5
-  });
+  const [itemWeights, setItemWeights] = useState<{ [key in WasteCategory]?: number }>({});
+  const [addressIdx, setAddressIdx] = useState(0);
+  const [dayOffset, setDayOffset] = useState(1);
+  const [slotIdx, setSlotIdx] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Pre-fill scanned item from AI Scanner route params
   React.useEffect(() => {
@@ -45,7 +59,8 @@ export const CustomerPickup: React.FC<{ navigation: any; route?: any }> = ({ nav
   }, [route?.params]);
 
 
-  const [address, setAddress] = useState('123 Galle Road, Colombo 05, Sri Lanka');
+  const selectedAddress = addresses[addressIdx];
+  const address = selectedAddress ? `${selectedAddress.title}: ${selectedAddress.street}, ${selectedAddress.city}` : 'No saved address — add one in Profile › Saved Addresses';
 
   const selectedCategories = Object.keys(itemWeights).filter(
     (key) => (itemWeights[key as WasteCategory] || 0) > 0
@@ -96,6 +111,13 @@ export const CustomerPickup: React.FC<{ navigation: any; route?: any }> = ({ nav
   });
 
   const handleSubmit = async () => {
+    if (!selectedAddress) {
+      setError('Please add a pickup address first.');
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    try {
     await createPickup({
       items: selectedCategories.map((cat) => {
         const mat = materials.find((m) => m.id === cat);
@@ -106,11 +128,17 @@ export const CustomerPickup: React.FC<{ navigation: any; route?: any }> = ({ nav
         };
       }),
       totalEstimatedWeight: parseFloat(totalWeight.toFixed(1)),
-      scheduledDate: 'Tomorrow',
-      scheduledTimeSlot: '09:00 AM - 11:00 AM',
-      address: { street: address, city: 'Colombo', latitude: 6.891, longitude: 79.858 }
+      scheduledDate: isoDay(dayOffset),
+      scheduledTimeSlot: SLOTS[slotIdx],
+      address: { street: selectedAddress.street, city: selectedAddress.city } as any
     });
-    navigation.navigate('CustomerTracking');
+    setItemWeights({});
+    navigation.navigate('HomeTab', { screen: 'PickupSuccess' });
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -242,18 +270,33 @@ export const CustomerPickup: React.FC<{ navigation: any; route?: any }> = ({ nav
         {/* Section 4: Pickup Address */}
         <View style={styles.cardContainer}>
           <Text style={styles.sectionHeaderTitle}>Pickup Address</Text>
-          <View style={styles.addressBox}>
+          <TouchableOpacity style={styles.addressBox} onPress={() => addresses.length && setAddressIdx((addressIdx + 1) % addresses.length)}>
             <Text style={{ fontSize: 20, marginRight: 10 }}>📍</Text>
-            <Text style={styles.addressTxt}>{address}</Text>
-          </View>
+            <Text style={styles.addressTxt}>{address}{addresses.length > 1 ? '  (tap to change)' : ''}</Text>
+          </TouchableOpacity>
         </View>
+
+        <View style={styles.cardContainer}>
+          <Text style={styles.sectionHeaderTitle}>Pickup Date & Time</Text>
+          <TouchableOpacity style={styles.addressBox} onPress={() => setDayOffset(dayOffset >= 7 ? 1 : dayOffset + 1)}>
+            <Text style={{ fontSize: 20, marginRight: 10 }}>📅</Text>
+            <Text style={styles.addressTxt}>{dayLabel(dayOffset)} ({isoDay(dayOffset)}) — tap to change</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.addressBox, { marginTop: 8 }]} onPress={() => setSlotIdx((slotIdx + 1) % SLOTS.length)}>
+            <Text style={{ fontSize: 20, marginRight: 10 }}>⏰</Text>
+            <Text style={styles.addressTxt}>{SLOTS[slotIdx]} — tap to change</Text>
+          </TouchableOpacity>
+        </View>
+
+        {error && <Text style={{ color: '#DC2626', fontWeight: '600', marginBottom: 8 }}>⚠️ {error}</Text>}
 
         {/* Action Button */}
         <Button
           title={selectedCategories.length > 0 ? `Confirm Request (LKR ${totalCash.toLocaleString()})` : "Select Items to Continue"}
           onPress={handleSubmit}
           themeRole="customer"
-          disabled={selectedCategories.length === 0}
+          disabled={selectedCategories.length === 0 || submitting}
+          loading={submitting}
           style={{ marginTop: 8 }}
         />
       </View>

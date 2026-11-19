@@ -2,8 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Header } from '../../../common/Header/Header';
 import { Card } from '../../../common/Card/Card';
+import { useApiData } from '../../../hooks/useApiData';
+import { pickerService, formatLkr } from '../../../services/picker.service';
 
 export const PickerEarnings: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { data: stats } = useApiData(pickerService.stats, []);
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
       <Header title="Collector Earnings" subtitle="Shift commissions & payout log" showBack onBackPress={() => navigation.goBack()} />
@@ -12,18 +15,18 @@ export const PickerEarnings: React.FC<{ navigation: any }> = ({ navigation }) =>
         {/* Earnings Hero Card */}
         <View style={styles.heroCard}>
           <Text style={styles.heroLabel}>Weekly Earnings</Text>
-          <Text style={styles.heroVal}>LKR 14,250</Text>
+          <Text style={styles.heroVal}>{formatLkr(stats?.week.earningsLkr ?? 0)}</Text>
 
           <View style={styles.metaRow}>
             <View style={styles.metaCol}>
-              <Text style={styles.metaVal}>48 Pickups</Text>
+              <Text style={styles.metaVal}>{stats?.week.jobs ?? 0} Pickups</Text>
               <Text style={styles.metaSub}>Completed</Text>
             </View>
 
             <View style={styles.vDivider} />
 
             <View style={styles.metaCol}>
-              <Text style={styles.metaVal}>142.5 kg</Text>
+              <Text style={styles.metaVal}>{stats?.week.kg ?? 0} kg</Text>
               <Text style={styles.metaSub}>Payload Total</Text>
             </View>
           </View>
@@ -37,11 +40,7 @@ export const PickerEarnings: React.FC<{ navigation: any }> = ({ navigation }) =>
           </View>
         </View>
 
-        {[
-          { day: 'Today (Aug 06)', jobs: '5 pickups', amount: 'LKR 3,305' },
-          { day: 'Yesterday (Aug 05)', jobs: '8 pickups', amount: 'LKR 4,120' },
-          { day: 'Aug 04, 2026', jobs: '6 pickups', amount: 'LKR 2,850' }
-        ].map((item, idx) => (
+        {(stats?.daily || []).map((d) => ({ day: d.label, jobs: `${d.jobs} pickup${d.jobs === 1 ? '' : 's'} · ${d.kg} kg`, amount: formatLkr(d.earningsLkr) })).map((item, idx) => (
           <Card key={idx} style={styles.card}>
             <View style={styles.cardRow}>
               <View style={{ flex: 1 }}>

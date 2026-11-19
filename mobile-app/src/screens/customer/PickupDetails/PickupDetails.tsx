@@ -1,95 +1,135 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Header } from '../../../common/Header/Header';
 import { Card } from '../../../common/Card/Card';
 import { Ionicons } from '@expo/vector-icons';
+import { useApiData } from '../../../hooks/useApiData';
+import { pickupService } from '../../../services/pickup.service';
+import { customerService } from '../../../services/customer.service';
+
+const fmtTime = (iso?: string) =>
+  iso ? new Date(iso).toLocaleString('en-US', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'Pending';
+
+const STATUS_LABEL: Record<string, string> = {
+  pending: 'Awaiting Collector Assignment',
+  assigned: 'Confirmed & Scheduled',
+  in_progress: 'Collector En Route',
+  completed: 'Completed & Verified',
+  cancelled: 'Cancelled',
+};
 
 export const CustomerPickupDetails: React.FC<{ navigation: any; route: any }> = ({ navigation, route }) => {
-  const pickupId = route?.params?.pickupId || 'PU-1024';
+  const pickupId: string = route?.params?.pickupId;
+  const { data, error, reload } = useApiData(
+    () => Promise.all([pickupService.getPickup(pickupId), customerService.materialRates()]),
+    [pickupId]
+  );
+  const [cancelling, setCancelling] = useState(false);
+  const [pickup, rates] = data || [null, []];
+  const p = pickup as any;
 
-  const timelineSteps = [
-    { title: 'Request Created', time: 'Aug 05, 08:30 AM', done: true },
-    { title: 'Collector Assigned (Suresh K.)', time: 'Aug 05, 09:15 AM', done: true },
-    { title: 'En Route to Doorstep', time: 'Tomorrow, 08:00 AM', done: false },
-    { title: 'Digital Weight Verification', time: 'Pending', done: false }
-  ];
+  const timelineSteps = p
+    ? [
+        { title: 'Request Created', time: fmtTime(p.createdAt), done: true },
+        { title: p.pickerName ? `Collector Assigned (${p.pickerName})` : 'Collector Assignment', time: fmtTime(p.assignedAt), done: !!p.assignedAt && !!p.pickerName },
+        { title: 'En Route to Doorstep', time: p.acceptedAt ? fmtTime(p.acceptedAt) : `${p.scheduledDate} · ${p.scheduledTimeSlot}`, done: !!p.acceptedAt },
+        { title: 'Digital Weight Verification', time: p.completedAt ? `${fmtTime(p.completedAt)} · ${p.totalActualWeight} kg` : 'Pending', done: p.status === 'completed' },
+      ]
+    : [];
+
+  const handleCancel = async () => {
+    setCancelling(true);
+    try {
+      await pickupService.cancel(pickupId);
+      await reload();
+    } catch (e) {
+      Alert.alert('Cannot cancel', (e as Error).message);
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
       <Header title={`Pickup ${pickupId}`} subtitle="Request tracking & item breakdown" showBack onBackPress={() => navigation.goBack()} greenTheme />
 
       <View style={styles.body}>
-        {/* Status Card */}
-        <View style={styles.statusHeroCard}>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusBadgeTxt}>● Confirmed & Scheduled</Text>
-          </View>
+        {error && <Text style={{ color: '#DC2626', marginBottom: 12 }}>⚠️ {error}</Text>}
+        {p && (
+          <>
+            <View style={styles.statusHeroCard}>
+              <View style={styles.statusBadge}>
+                <Text style={styles.statusBadgeTxt}>● {STATUS_LABEL[p.status] || p.status}</Text>
+              </View>
+              <Text style={styles.timeSlotTxt}>{p.scheduledDate} · {p.scheduledTimeSlot}</Text>
+              <Text style={styles.addressTxt}>📍 {p.address.street}, {p.address.city}</Text>
+              {p.rejectionReason && p.status === 'pending' && (
+                <Text style={[styles.addressTxt, { color: '#B45309' }]}>Reassigning collector: {p.rejectionReason}</Text>
+              )}
+            </View>
 
-          <Text style={styles.timeSlotTxt}>Tomorrow, 08:00 AM - 10:00 AM</Text>
-          <Text style={styles.addressTxt}>📍 45 Ward Place, Colombo 07</Text>
-        </View>
+            <View style={styles.sectionHeaderRow}>
+              <View style={styles.titleGroup}>
+                <View style={[styles.titleAccentBar, { backgroundColor: '#10B981' }]} />
+                <Text style={styles.sectionTitle}>Status Timeline</Text>
+              </View>
+            </View>
 
-        {/* Status Timeline */}
-        <View style={styles.sectionHeaderRow}>
-          <View style={styles.titleGroup}>
-            <View style={[styles.titleAccentBar, { backgroundColor: '#10B981' }]} />
-            <Text style={styles.sectionTitle}>Status Timeline</Text>
-          </View>
-        </View>
-
-        <Card style={styles.timelineCard}>
-          {timelineSteps.map((step, idx) => (
-            <View key={idx} style={styles.timelineRow}>
-              <View style={styles.timelineIndicator}>
-                <View style={[styles.dotCircle, step.done ? styles.dotDone : styles.dotPending]}>
-                  {step.done && <Ionicons name="checkmark" size={12} color="#FFFFFF" />}
+            <Card style={styles.timelineCard}>
+              {timelineSteps.map((step, idx) => (
+                <View key={idx} style={styles.timelineRow}>
+                  <View style={styles.timelineIndicator}>
+                    <View style={[styles.dotCircle, step.done ? styles.dotDone : styles.dotPending]}>
+                      {step.done && <Ionicons name="checkmark" size={12} color="#FFFFFF" />}
+                    </View>
+                    {idx < timelineSteps.length - 1 && (
+                      <View style={[styles.timelineLine, step.done ? styles.lineDone : styles.linePending]} />
+                    )}
+                  </View>
+                  <View style={{ flex: 1, paddingBottom: idx === timelineSteps.length - 1 ? 0 : 20 }}>
+                    <Text style={[styles.timelineStepTitle, { color: step.done ? '#0F172A' : '#94A3B8' }]}>{step.title}</Text>
+                    <Text style={styles.timelineStepTime}>{step.time}</Text>
+                  </View>
                 </View>
+              ))}
+            </Card>
 
-                {idx < timelineSteps.length - 1 && (
-                  <View style={[styles.timelineLine, step.done ? styles.lineDone : styles.linePending]} />
-                )}
-              </View>
-
-              <View style={{ flex: 1, paddingBottom: idx === timelineSteps.length - 1 ? 0 : 20 }}>
-                <Text style={[styles.timelineStepTitle, { color: step.done ? '#0F172A' : '#94A3B8' }]}>{step.title}</Text>
-                <Text style={styles.timelineStepTime}>{step.time}</Text>
+            <View style={styles.sectionHeaderRow}>
+              <View style={styles.titleGroup}>
+                <View style={[styles.titleAccentBar, { backgroundColor: '#0284C7' }]} />
+                <Text style={styles.sectionTitle}>Declared Waste Items</Text>
               </View>
             </View>
-          ))}
-        </Card>
 
-        {/* Items Breakdown */}
-        <View style={styles.sectionHeaderRow}>
-          <View style={styles.titleGroup}>
-            <View style={[styles.titleAccentBar, { backgroundColor: '#0284C7' }]} />
-            <Text style={styles.sectionTitle}>Declared Waste Items</Text>
-          </View>
-        </View>
+            <Card style={styles.itemsCard}>
+              {p.items.map((it: any) => {
+                const rate = rates.find((r) => r.category === it.category);
+                const kg = it.actualWeightKg ?? it.estimatedWeightKg;
+                return (
+                  <View key={it.category} style={styles.itemRow}>
+                    <Text style={{ fontSize: 22, marginRight: 10 }}>{rate?.icon || '♻️'}</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.itemTitle}>{rate?.materialName || it.category}</Text>
+                      <Text style={styles.itemSub}>{it.actualWeightKg !== undefined ? `Verified: ${kg} kg` : `Est: ~${kg} kg`}</Text>
+                    </View>
+                    <Text style={styles.itemPoints}>+{Math.round(kg * (rate?.pointsPerKg || 0))} pts</Text>
+                  </View>
+                );
+              })}
+            </Card>
 
-        <Card style={styles.itemsCard}>
-          <View style={styles.itemRow}>
-            <Text style={{ fontSize: 22, marginRight: 10 }}>🧴</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.itemTitle}>Plastic Bottles (PET)</Text>
-              <Text style={styles.itemSub}>Est: ~3.0 kg</Text>
-            </View>
-            <Text style={styles.itemPoints}>+150 pts</Text>
-          </View>
-
-          <View style={styles.itemRow}>
-            <Text style={{ fontSize: 22, marginRight: 10 }}>📰</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.itemTitle}>Paper & Cardboard</Text>
-              <Text style={styles.itemSub}>Est: ~5.0 kg</Text>
-            </View>
-            <Text style={styles.itemPoints}>+150 pts</Text>
-          </View>
-        </Card>
-
-        {/* Action Button */}
-        <TouchableOpacity style={styles.trackBtn} onPress={() => navigation.navigate('CustomerTracking')}>
-          <Text style={styles.trackBtnTxt}>📍 Track Collector Live</Text>
-        </TouchableOpacity>
+            {['pending', 'assigned'].includes(p.status) && (
+              <TouchableOpacity style={[styles.trackBtn, { backgroundColor: '#FEF2F2' }]} onPress={handleCancel} disabled={cancelling}>
+                <Text style={[styles.trackBtnTxt, { color: '#DC2626' }]}>{cancelling ? 'Cancelling…' : '✖ Cancel Pickup Request'}</Text>
+              </TouchableOpacity>
+            )}
+            {p.status === 'in_progress' && (
+              <TouchableOpacity style={styles.trackBtn} onPress={() => navigation.navigate('CustomerTracking', { pickupId })}>
+                <Text style={styles.trackBtnTxt}>📍 Track Collector Live</Text>
+              </TouchableOpacity>
+            )}
+          </>
+        )}
       </View>
     </ScrollView>
   );

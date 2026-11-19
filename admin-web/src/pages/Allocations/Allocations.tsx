@@ -23,21 +23,22 @@ export const Allocations: React.FC = () => {
   }, []);
 
   async function loadData() {
-    const [pickupList, pickerList] = await Promise.all([
-      pickupService.getPickups(),
-      pickerService.getPickers()
-    ]);
+    let pickupList, pickerList;
+    try {
+      [pickupList, pickerList] = await Promise.all([
+        pickupService.getPickups(),
+        pickerService.getPickers()
+      ]);
+    } catch (err) {
+      console.error('Failed to load allocation data:', err);
+      return;
+    }
     setPickups(pickupList);
     setPickers(pickerList);
     const unassigned = pickupList.find(p => p.status === 'pending');
-    if (unassigned) {
-      setSelectedPickupId(unassigned.id);
-    } else if (pickupList.length > 0) {
-      setSelectedPickupId(pickupList[0].id);
-    }
-    if (pickerList.length > 0) {
-      setSelectedPickerId(pickerList[0].id);
-    }
+    setSelectedPickupId(cur => cur || unassigned?.id || pickupList[0]?.id || '');
+    const firstActive = pickerList.find(pk => pk.isActive !== false);
+    setSelectedPickerId(cur => cur || firstActive?.id || '');
   }
 
   const activePickup = pickups.find(p => p.id === selectedPickupId);
@@ -68,7 +69,7 @@ export const Allocations: React.FC = () => {
             ...p,
             pickerId: chosenPicker.id,
             pickerName: chosenPicker.name,
-            status: 'in_progress',
+            status: 'assigned',
             pickerStatus: 'assigned',
             rejectionReason: null
           };
@@ -77,7 +78,8 @@ export const Allocations: React.FC = () => {
       }));
 
     } catch (err) {
-      console.warn('Allocation error:', err);
+      setSuccessMessage(null);
+      alert(`Allocation failed: ${(err as Error).message}`);
     } finally {
       setSubmitting(false);
     }

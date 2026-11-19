@@ -35,19 +35,32 @@ export const Register: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const handleRegister = async () => {
+    if (!name.trim() || !email.trim() || !password) {
+      setError('Name, email and password are required.');
+      return;
+    }
+    const parts = streetAddress.split(',').map((p) => p.trim()).filter(Boolean);
+    const city = parts.length > 1 ? parts.pop()! : '';
+    setSubmitting(true);
+    setError(null);
     try {
-      await authService.register({
-        name: name || 'Kasun Perera',
-        email: email || 'kasun@gmail.com',
-        phone: phone || '+94 77 123 4567',
+      const created = await authService.register({
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        password,
         role: 'customer',
-        address: { street: `${houseNumber} ${streetAddress}`.trim() || '15/A Havelock Road', city: landmark || 'Colombo 05', zipCode: '00500' }
+        address: { street: `${houseNumber} ${parts.join(', ')}`.trim(), city, zipCode: '' }
       });
-      login('customer');
-    } catch (error) {
-      console.warn('Registration warning:', error);
-      login('customer');
+      login('customer', created);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -134,9 +147,13 @@ export const Register: React.FC<{ navigation: any }> = ({ navigation }) => {
           leftIcon={<Text style={{ fontSize: 16 }}>🏢</Text>}
         />
 
+        {error && <Text style={{ color: '#DC2626', fontSize: 13, fontWeight: '600', marginTop: 12 }}>⚠️ {error}</Text>}
+
         <Button
           title="Complete Registration & Sign In 🚀"
           onPress={handleRegister}
+          loading={submitting}
+          disabled={submitting}
           themeRole="customer"
           style={{ marginTop: 20 }}
         />

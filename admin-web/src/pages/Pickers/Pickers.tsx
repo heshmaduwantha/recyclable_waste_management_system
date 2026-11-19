@@ -20,9 +20,11 @@ export const Pickers: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     async function loadPickers() {
-      const data = await pickerService.getPickers();
-      if (isMounted) {
-        setPickers(data);
+      try {
+        const data = await pickerService.getPickers();
+        if (isMounted) setPickers(data);
+      } catch (err) {
+        console.error('Failed to load pickers:', err);
       }
     }
     loadPickers();
@@ -37,11 +39,11 @@ export const Pickers: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name || 'Saman Kumara',
-          email: email || 'saman@ecocollect.lk',
-          phone: phone || '+94 71 888 9999',
-          vehicleNumber: vehicleNumber || 'WP-9988',
-          city: city || 'Colombo 03'
+          name,
+          email,
+          phone,
+          vehicleNumber,
+          city
         })
       });
       setPickers([newPicker, ...pickers]);
@@ -52,7 +54,7 @@ export const Pickers: React.FC = () => {
       setVehicleNumber('');
       setCity('');
     } catch (err) {
-      console.warn('Onboarding error:', err);
+      alert(`Could not onboard picker: ${(err as Error).message}`);
     } finally {
       setSubmitting(false);
     }

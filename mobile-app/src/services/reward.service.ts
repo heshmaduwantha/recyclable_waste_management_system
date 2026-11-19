@@ -1,46 +1,26 @@
-import { Reward } from '../../../shared/types';
+import { apiCall, apiPost } from './api';
+
+export interface CatalogueReward {
+  id: string;
+  title: string;
+  description: string;
+  pointsRequired: number;
+  category: string;
+  partnerName: string;
+  icon: string;
+  color: string;
+  expiryDate: string;
+}
+
+export interface RedeemResult {
+  success: boolean;
+  redemptionId: string;
+  reward: CatalogueReward;
+  newBalance: number;
+  cashEquivalentLkr: number;
+}
 
 export const rewardService = {
-  async getRewards(): Promise<Reward[]> {
-    await new Promise((res) => setTimeout(res, 200));
-    return [
-      {
-        id: 'REW-DIALOG-100',
-        title: 'Dialog LKR 100 Mobile Reload',
-        description: 'Instant airtime reload for any Dialog mobile number (077 / 076 / 074)',
-        pointsRequired: 100,
-        category: 'voucher',
-        partnerName: 'Dialog Axiata PLC',
-        expiryDate: '2026-12-31'
-      },
-      {
-        id: 'REW-MOBITEL-100',
-        title: 'SLT-Mobitel LKR 100 Mobile Reload',
-        description: 'Instant reload top-up for any SLT-Mobitel mobile number (071 / 070)',
-        pointsRequired: 100,
-        category: 'voucher',
-        partnerName: 'SLT-Mobitel Sri Lanka',
-        expiryDate: '2026-12-31'
-      },
-      {
-        id: 'REW-DIALOG-500',
-        title: 'Dialog LKR 500 Data & Voice Reload',
-        description: 'LKR 500 mobile reload credit for Dialog prepaid & postpaid',
-        pointsRequired: 500,
-        category: 'voucher',
-        partnerName: 'Dialog Axiata PLC',
-        expiryDate: '2026-12-31'
-      },
-      {
-        id: 'REW-MOBITEL-500',
-        title: 'SLT-Mobitel LKR 500 Data & Voice Reload',
-        description: 'LKR 500 mobile reload credit for SLT-Mobitel prepaid & postpaid',
-        pointsRequired: 500,
-        category: 'voucher',
-        partnerName: 'SLT-Mobitel Sri Lanka',
-        expiryDate: '2026-12-31'
-      }
-    ];
-  }
+  getRewards: () => apiCall<CatalogueReward[]>('/rewards/catalogue'),
+  redeem: (rewardId: string, mobileNumber: string) => apiPost<RedeemResult>('/wallet/redeem', { rewardId, mobileNumber }),
 };
-

@@ -1,24 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Header } from '../../../common/Header/Header';
 import { Card } from '../../../common/Card/Card';
-import { mockPickupsList } from '../../../mock/pickups';
+import { useApiData } from '../../../hooks/useApiData';
+import { pickerService, PickerJob } from '../../../services/picker.service';
+import { usePickup } from '../../../store/pickup/PickupContext';
 
 export const PickerJobs: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState<'queue' | 'history'>('queue');
 
-  const activeJobs = mockPickupsList.filter(j => j.status === 'pending' || j.status === 'in_progress');
-  const historyJobs = [
-    { id: 'PU-8821', customerName: 'Nimal Silva', phone: '+94 77 999 8877', address: '45 Galle Road, Colombo 03', completedAt: 'Today, 2:15 PM', weightKg: 14.5, earnedPts: 290, status: 'Completed' },
-    { id: 'PU-8819', customerName: 'Kamal Perera', phone: '+94 71 222 3344', address: '88 Kandy Road, Malabe', completedAt: 'Yesterday, 11:30 AM', weightKg: 22.0, earnedPts: 440, status: 'Completed' },
-    { id: 'PU-8815', customerName: 'Anura Fernando', phone: '+94 70 555 1122', address: '12 Marine Drive, Bambalapitiya', completedAt: 'Aug 05, 4:00 PM', weightKg: 8.0, earnedPts: 160, status: 'Completed' }
-  ];
+  const { setActiveJob } = usePickup();
+  const { data, error, reload } = useApiData(() => Promise.all([pickerService.jobs(), pickerService.history()]), []);
+  const [activeJobs, history] = data || [[], []];
+  const historyJobs = history.map((h) => ({
+    id: h.id, customerName: h.customerName, address: `${h.address.street}, ${h.address.city}`,
+    completedAt: h.completedLabel, weightKg: h.totalActualWeight, earnedPts: h.earnedPoints, status: 'Completed'
+  }));
+
+  const startJob = async (job: PickerJob) => {
+    try {
+      if (job.jobStatus !== 'Accepted') await pickerService.accept(job.id);
+      setActiveJob({ ...job, jobStatus: 'Accepted', pickerStatus: 'accepted' });
+      navigation.navigate('PickerHomeTab', { screen: 'PickerGPS' });
+    } catch (e) {
+      Alert.alert('Could not start job', (e as Error).message);
+      reload();
+    }
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }} bounces={false}>
       <Header title="Collector Jobs & History" subtitle="Active pickup queue & completed trip logs" />
 
       <View style={styles.body}>
+        {error && <Text style={{ color: '#DC2626', marginBottom: 8 }}>⚠️ {error}</Text>}
         {/* Pitch Deck Segmented Tab Bar */}
         <View style={styles.tabBar}>
           <TouchableOpacity
@@ -57,7 +72,7 @@ export const PickerJobs: React.FC<{ navigation: any }> = ({ navigation }) => {
                 <View style={styles.header}>
                   <Text style={styles.id}>{job.id}</Text>
                   <View style={styles.statusBadge}>
-                    <Text style={styles.statusTxt}>{job.status}</Text>
+                    <Text style={styles.statusTxt}>{job.jobStatus}</Text>
                   </View>
                 </View>
 
@@ -67,10 +82,10 @@ export const PickerJobs: React.FC<{ navigation: any }> = ({ navigation }) => {
 
                 <TouchableOpacity
                   style={styles.detailBtn}
-                  onPress={() => navigation.navigate('PickerGPS', { jobId: job.id })}
+                  onPress={() => startJob(job)}
                   activeOpacity={0.85}
                 >
-                  <Text style={styles.detailTxt}>Start Navigation & Verification →</Text>
+                  <Text style={styles.detailTxt}>{job.jobStatus === 'Accepted' ? 'Continue Navigation & Verification →' : 'Accept & Start Navigation →'}</Text>
                 </TouchableOpacity>
               </Card>
             ))}

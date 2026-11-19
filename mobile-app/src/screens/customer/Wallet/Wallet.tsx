@@ -1,15 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useApiData } from '../../../hooks/useApiData';
+import { customerService } from '../../../services/customer.service';
+import { useAuth } from '../../../store/auth/AuthContext';
+
+const FILTERS: (undefined | 'earn' | 'redeem')[] = [undefined, 'earn', 'redeem'];
 
 export const CustomerWallet: React.FC<{ navigation?: any }> = ({ navigation }) => {
-  const transactions = [
-    { id: '1', title: 'Plastic Pickup #047', date: 'Today', points: '+125 pts', type: 'earn', icon: '🧴' },
-    { id: '2', title: 'Mobitel Recharge', date: 'Aug 5', points: '-500 pts', type: 'redeem', icon: '📱' },
-    { id: '3', title: 'Glass Pickup #041', date: 'Aug 4', points: '+90 pts', type: 'earn', icon: '🫙' }
-  ];
+  const { user } = useAuth();
+  const [filterIdx, setFilterIdx] = useState(0);
+  const filter = FILTERS[filterIdx];
+  const { data, error } = useApiData(
+    () => Promise.all([customerService.wallet(), customerService.walletStats(), customerService.transactions(filter)]),
+    [user?.id, filter]
+  );
+  const [wallet, stats, transactions] = data || [null, null, []];
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }} bounces={false}>
+      {error && <Text style={{ color: '#DC2626', padding: 12 }}>⚠️ {error}</Text>}
       {/* Soft Emerald Header Hero */}
       <View style={styles.heroHeader}>
         <View style={styles.headerTopRow}>
@@ -20,10 +29,10 @@ export const CustomerWallet: React.FC<{ navigation?: any }> = ({ navigation }) =
         <View style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>Available Eco Points</Text>
           <View style={styles.pointsValRow}>
-            <Text style={styles.pointsVal}>2,450</Text>
+            <Text style={styles.pointsVal}>{(wallet?.totalPoints ?? 0).toLocaleString()}</Text>
             <Text style={styles.ptsUnit}>pts</Text>
           </View>
-          <Text style={styles.equivTxt}>≈ LKR 490 equivalent value</Text>
+          <Text style={styles.equivTxt}>≈ LKR {(wallet?.cashEquivalentLkr ?? 0).toLocaleString()} equivalent value</Text>
 
           <TouchableOpacity
             style={styles.redeemBtn}
@@ -41,7 +50,7 @@ export const CustomerWallet: React.FC<{ navigation?: any }> = ({ navigation }) =
         <View style={styles.metricsCard}>
           <View style={styles.metricCol}>
             <Text style={{ fontSize: 18, marginBottom: 4 }}>📈</Text>
-            <Text style={styles.metricVal}>3,450</Text>
+            <Text style={styles.metricVal}>{(stats?.totalEarned ?? 0).toLocaleString()}</Text>
             <Text style={styles.metricSub}>Total Earned</Text>
           </View>
 
@@ -49,7 +58,7 @@ export const CustomerWallet: React.FC<{ navigation?: any }> = ({ navigation }) =
 
           <View style={styles.metricCol}>
             <Text style={{ fontSize: 18, marginBottom: 4 }}>🎁</Text>
-            <Text style={styles.metricVal}>1,000</Text>
+            <Text style={styles.metricVal}>{(stats?.totalRedeemed ?? 0).toLocaleString()}</Text>
             <Text style={styles.metricSub}>Redeemed</Text>
           </View>
 
@@ -57,20 +66,21 @@ export const CustomerWallet: React.FC<{ navigation?: any }> = ({ navigation }) =
 
           <View style={styles.metricCol}>
             <Text style={{ fontSize: 18, marginBottom: 4 }}>♻️</Text>
-            <Text style={styles.metricVal}>24</Text>
+            <Text style={styles.metricVal}>{stats?.totalPickups ?? 0}</Text>
             <Text style={styles.metricSub}>Pickups</Text>
           </View>
         </View>
 
         {/* Transactions Section Header */}
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>Transactions</Text>
-          <TouchableOpacity style={styles.filterBtn}>
+          <Text style={styles.sectionTitle}>Transactions{filter ? ` · ${filter === 'earn' ? 'Earned' : 'Redeemed'}` : ''}</Text>
+          <TouchableOpacity style={styles.filterBtn} onPress={() => setFilterIdx((filterIdx + 1) % FILTERS.length)}>
             <Text style={{ fontSize: 16 }}>🌪️</Text>
           </TouchableOpacity>
         </View>
 
         {/* Transaction Items */}
+        {transactions.length === 0 && <Text style={{ color: '#64748B', textAlign: 'center', marginTop: 12 }}>No transactions yet.</Text>}
         {transactions.map((item) => (
           <View key={item.id} style={styles.txnCard}>
             <View style={styles.txnIconBg}>

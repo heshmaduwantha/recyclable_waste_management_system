@@ -3,28 +3,30 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Header } from '../../../common/Header/Header';
 import { Button } from '../../../common/Button/Button';
 
-export const CustomerBadgeDetails: React.FC<{ navigation: any; route: any }> = ({ navigation }) => {
+export const CustomerBadgeDetails: React.FC<{ navigation: any; route: any }> = ({ navigation, route }) => {
+  const badge = route?.params?.badge;
+  if (!badge) return null;
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
       <Header title="Badge Specification" subtitle="Eco achievement criteria & multipliers" showBack onBackPress={() => navigation.goBack()} greenTheme />
 
       <View style={styles.body}>
         <View style={styles.heroBadgeCard}>
-          <Text style={styles.badgeIcon}>🦸‍♂️</Text>
-          <Text style={styles.badgeName}>Plastic Buster</Text>
+          <Text style={styles.badgeIcon}>{badge.icon}</Text>
+          <Text style={styles.badgeName}>{badge.name}</Text>
           <View style={styles.unlockedPill}>
-            <Text style={styles.unlockedTxt}>✓ Unlocked Aug 2026</Text>
+            <Text style={styles.unlockedTxt}>{badge.isUnlocked ? `✓ Unlocked ${badge.unlockedAt || ''}` : `🔒 ${badge.progressKg ?? 0} / ${badge.requiredRecycledKg} kg`}</Text>
           </View>
         </View>
 
         <View style={styles.infoGroup}>
           <Text style={styles.infoLabel}>CRITERIA</Text>
-          <Text style={styles.infoVal}>Recycle over 25.0 kg of PET plastic bottles.</Text>
+          <Text style={styles.infoVal}>{badge.criteria || badge.description}</Text>
         </View>
 
         <View style={styles.infoGroup}>
           <Text style={styles.infoLabel}>PERKS & MULTIPLIERS</Text>
-          <Text style={styles.infoVal}>+10% Bonus Eco Points on all future plastic collections.</Text>
+          <Text style={styles.infoVal}>{badge.perksAndMultipliers || '—'}</Text>
         </View>
 
         <Button title="Got It" onPress={() => navigation.goBack()} style={{ marginTop: 24 }} />

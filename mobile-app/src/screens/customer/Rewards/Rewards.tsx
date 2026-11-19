@@ -4,55 +4,51 @@ import { Header } from '../../../common/Header/Header';
 import { Card } from '../../../common/Card/Card';
 import { Button } from '../../../common/Button/Button';
 import { Ionicons } from '@expo/vector-icons';
+import { useApiData } from '../../../hooks/useApiData';
+import { rewardService, CatalogueReward } from '../../../services/reward.service';
+import { customerService } from '../../../services/customer.service';
+import { useAuth } from '../../../store/auth/AuthContext';
 
 export const CustomerRewards: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [selectedReload, setSelectedReload] = useState<{ title: string; pts: number; provider: string } | null>(null);
-  const [mobileNumber, setMobileNumber] = useState('077 123 4567');
+  const { user } = useAuth();
+  const [selectedReload, setSelectedReload] = useState<CatalogueReward | null>(null);
+  const [mobileNumber, setMobileNumber] = useState(user?.phone || '');
   const [showModal, setShowModal] = useState(false);
+  const [redeeming, setRedeeming] = useState(false);
+  const [modalError, setModalError] = useState<string | null>(null);
+  const { data, error, reload } = useApiData(() => Promise.all([rewardService.getRewards(), customerService.wallet()]), [user?.id]);
+  const [recharges, wallet] = data || [[], null];
+  const balance = wallet?.totalPoints ?? 0;
 
-  const recharges = [
-    {
-      title: 'Dialog LKR 100 Mobile Reload',
-      desc: 'Instant airtime top-up for Dialog (077 / 076 / 074)',
-      pts: 100,
-      provider: 'Dialog Axiata',
-      color: '#DC2626',
-      icon: '📱'
-    },
-    {
-      title: 'SLT-Mobitel LKR 100 Mobile Reload',
-      desc: 'Instant reload top-up for SLT-Mobitel (071 / 070)',
-      pts: 100,
-      provider: 'SLT-Mobitel',
-      color: '#0284C7',
-      icon: '📲'
-    },
-    {
-      title: 'Dialog LKR 500 Data & Voice Reload',
-      desc: 'LKR 500 mobile reload credit for Dialog prepaid & postpaid',
-      pts: 500,
-      provider: 'Dialog Axiata',
-      color: '#DC2626',
-      icon: '📶'
-    },
-    {
-      title: 'SLT-Mobitel LKR 500 Data & Voice Reload',
-      desc: 'LKR 500 mobile reload credit for SLT-Mobitel prepaid & postpaid',
-      pts: 500,
-      provider: 'SLT-Mobitel',
-      color: '#0284C7',
-      icon: '⚡'
-    }
-  ];
-
-  const handleRedeemClick = (item: { title: string; pts: number; provider: string }) => {
+  const handleRedeemClick = (item: CatalogueReward) => {
     setSelectedReload(item);
+    setModalError(null);
     setShowModal(true);
   };
 
-  const handleConfirmRedeem = () => {
-    setShowModal(false);
-    navigation.navigate('RewardSuccess');
+  const handleConfirmRedeem = async () => {
+    if (!selectedReload) return;
+    if (!/^\+?[0-9 ]{9,15}$/.test(mobileNumber.trim())) {
+      setModalError('Enter a valid mobile number.');
+      return;
+    }
+    setRedeeming(true);
+    setModalError(null);
+    try {
+      const res = await rewardService.redeem(selectedReload.id, mobileNumber.trim());
+      setShowModal(false);
+      reload();
+      navigation.navigate('RewardSuccess', {
+        redemptionId: res.redemptionId,
+        rewardTitle: res.reward.title,
+        mobileNumber: mobileNumber.trim(),
+        newBalance: res.newBalance
+      });
+    } catch (e) {
+      setModalError((e as Error).message);
+    } finally {
+      setRedeeming(false);
+    }
   };
 
   return (
@@ -63,7 +59,7 @@ export const CustomerRewards: React.FC<{ navigation: any }> = ({ navigation }) =
         {/* Total EcoPoints Summary Card */}
         <Card style={styles.pointsSummaryCard}>
           <Text style={styles.summaryLabel}>Total EcoPoints Balance</Text>
-          <Text style={styles.summaryValue}>2,450 pts</Text>
+          <Text style={styles.summaryValue}>{balance.toLocaleString()} pts</Text>
           <Text style={styles.summarySub}>Convert your recyclable waste into instant mobile recharges!</Text>
         </Card>
 
@@ -75,23 +71,28 @@ export const CustomerRewards: React.FC<{ navigation: any }> = ({ navigation }) =
           </View>
         </View>
 
-        {recharges.map((item, idx) => (
-          <Card key={idx} style={styles.rewardItemCard}>
+        {error && <Text style={{ color: '#DC2626', marginBottom: 12 }}>⚠️ {error}</Text>}
+        {recharges.map((item) => (
+          <Card key={item.id} style={styles.rewardItemCard}>
             <View style={[styles.rewardIconBg, { backgroundColor: item.color === '#DC2626' ? '#FEF2F2' : '#F0F9FF' }]}>
               <Text style={{ fontSize: 26 }}>{item.icon}</Text>
             </View>
             <View style={{ flex: 1 }}>
               <View style={styles.providerBadge}>
-                <Text style={[styles.providerTxt, { color: item.color }]}>{item.provider}</Text>
+                <Text style={[styles.providerTxt, { color: item.color }]}>{item.partnerName}</Text>
               </View>
 
               <Text style={styles.rewardTitle}>{item.title}</Text>
-              <Text style={styles.rewardDesc}>{item.desc}</Text>
+              <Text style={styles.rewardDesc}>{item.description}</Text>
 
               <View style={styles.rewardFooter}>
-                <Text style={styles.rewardPts}>⭐ {item.pts} pts</Text>
-                <TouchableOpacity style={styles.redeemPill} onPress={() => handleRedeemClick(item)}>
-                  <Text style={styles.redeemPillTxt}>Reload Now</Text>
+                <Text style={styles.rewardPts}>⭐ {item.pointsRequired} pts</Text>
+                <TouchableOpacity
+                  style={[styles.redeemPill, balance < item.pointsRequired && { opacity: 0.4 }]}
+                  disabled={balance < item.pointsRequired}
+                  onPress={() => handleRedeemClick(item)}
+                >
+                  <Text style={styles.redeemPillTxt}>{balance < item.pointsRequired ? 'Not enough pts' : 'Redeem Now'}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -117,8 +118,9 @@ export const CustomerRewards: React.FC<{ navigation: any }> = ({ navigation }) =
               />
             </View>
 
+            {modalError && <Text style={{ color: '#DC2626', fontWeight: '600', marginBottom: 8 }}>⚠️ {modalError}</Text>}
             <View style={styles.modalBtns}>
-              <Button title="Confirm & Instant Reload ✨" onPress={handleConfirmRedeem} style={{ width: '100%' }} />
+              <Button title={`Confirm · ${selectedReload?.pointsRequired ?? 0} pts ✨`} onPress={handleConfirmRedeem} loading={redeeming} disabled={redeeming} style={{ width: '100%' }} />
               <Button title="Cancel" onPress={() => setShowModal(false)} variant="outline" style={{ width: '100%', marginTop: 8 }} />
             </View>
           </View>

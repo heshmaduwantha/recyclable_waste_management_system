@@ -1,3 +1,5 @@
+import { apiPost } from './api';
+
 export interface AIDetectionResult {
   category: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste';
   materialName: string;
@@ -56,22 +58,21 @@ const MATERIAL_DATABASE: Record<string, AIDetectionResult> = {
   }
 };
 
+interface ClassifyResponse { category: string; materialName: string; confidence: string; pointsPerKg: number; instructions: string }
+
 export const aiWasteDetectionService = {
   /**
-   * Analyzes photo using AI Vision (Google Gemini API simulation)
+   * Classifies the material via the backend (simulated vision model) and prices it with live DB rates.
    */
-  detectRecyclableWaste: async (imageUri?: string): Promise<AIDetectionResult> => {
-    // Simulate AI inference delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // Default to Plastic PET as standard vision detection
-    return MATERIAL_DATABASE['Plastic'];
-  },
-
-  /**
-   * Get metadata for specific category selection
-   */
-  getMaterialForCategory: (cat: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste'): AIDetectionResult => {
-    return MATERIAL_DATABASE[cat] || MATERIAL_DATABASE['Plastic'];
+  async getMaterialForCategory(cat: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste'): Promise<AIDetectionResult> {
+    const base = MATERIAL_DATABASE[cat] || MATERIAL_DATABASE['Plastic'];
+    const res = await apiPost<ClassifyResponse>('/ai/classify-material', { category: cat.toLowerCase() });
+    return {
+      ...base,
+      materialName: res.materialName,
+      confidenceScore: parseFloat(res.confidence),
+      estimatedPoints: Math.round(base.estimatedWeightKg * res.pointsPerKg),
+      tips: res.instructions
+    };
   }
 };
-

@@ -2,8 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Button } from '../../../common/Button/Button';
 import { Ionicons } from '@expo/vector-icons';
+import { useApiData } from '../../../hooks/useApiData';
+import { pickerService, formatLkr } from '../../../services/picker.service';
 
 export const PickerCollectionSuccess: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { data: history } = useApiData(pickerService.history, []);
+  const last = history?.[0];
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -12,20 +16,20 @@ export const PickerCollectionSuccess: React.FC<{ navigation: any }> = ({ navigat
         </View>
 
         <Text style={styles.title}>Collection Complete!</Text>
-        <Text style={styles.refCode}>Ref: PU-8820 · Verified</Text>
+        <Text style={styles.refCode}>Ref: {last?.id ?? '—'} · Verified</Text>
 
         <View style={styles.summaryCard}>
           <View style={styles.row}>
             <Text style={styles.label}>Verified Weight</Text>
-            <Text style={styles.val}>32.0 kg</Text>
+            <Text style={styles.val}>{last?.totalActualWeight ?? 0} kg</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Eco Points Credited</Text>
-            <Text style={styles.valGreen}>+800 pts</Text>
+            <Text style={styles.valGreen}>+{last?.earnedPoints ?? 0} pts</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Picker Commission</Text>
-            <Text style={styles.valBlue}>LKR 1,120</Text>
+            <Text style={styles.valBlue}>{formatLkr(last?.pickerCommissionLkr ?? 0)}</Text>
           </View>
         </View>
 

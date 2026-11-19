@@ -3,19 +3,22 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { Header } from '../../../common/Header/Header';
 import { Card } from '../../../common/Card/Card';
 import { useAuth } from '../../../store/auth/AuthContext';
-import { mockBadgesList } from '../../../mock/badges';
 import { Ionicons } from '@expo/vector-icons';
+import { useApiData } from '../../../hooks/useApiData';
+import { customerService } from '../../../services/customer.service';
 
-export const CustomerProfile: React.FC = () => {
-  const { user, logout, switchRole } = useAuth();
-  const userDisplayName = user?.name || 'Kasun Perera';
+export const CustomerProfile: React.FC<{ navigation?: any }> = ({ navigation }) => {
+  const { user, logout } = useAuth();
+  const { data, error } = useApiData(() => Promise.all([customerService.profile(), customerService.badges(), customerService.wallet()]), [user?.id]);
+  const [profile, badges, wallet] = data || [null, [], null];
+  const userDisplayName = profile?.name || user?.name || '';
   const initials = userDisplayName
     .split(' ')
     .filter(Boolean)
     .map((n: string) => n[0])
     .join('')
     .toUpperCase()
-    .slice(0, 2) || 'KP';
+    .slice(0, 2);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
@@ -30,18 +33,18 @@ export const CustomerProfile: React.FC = () => {
           </View>
 
           <Text style={styles.userName}>{userDisplayName}</Text>
-          <Text style={styles.userEmail}>{user?.email || 'kasun@gmail.com'}</Text>
-          <Text style={styles.userPhone}>{user?.phone || '+94 77 123 4567'}</Text>
+          <Text style={styles.userEmail}>{profile?.email || user?.email}</Text>
+          <Text style={styles.userPhone}>{profile?.phone || user?.phone}</Text>
 
           {/* Prominent Eco Points Badge Chip */}
           <View style={styles.pointsChipRow}>
             <View style={styles.pointsPill}>
               <Text style={{ fontSize: 16, marginRight: 6 }}>⭐</Text>
-              <Text style={styles.pointsValTxt}>2,450 Eco Points</Text>
+              <Text style={styles.pointsValTxt}>{(wallet?.totalPoints ?? 0).toLocaleString()} Eco Points</Text>
             </View>
 
             <View style={styles.tierPill}>
-              <Text style={styles.tierPillTxt}>🎗️ Green Warrior</Text>
+              <Text style={styles.tierPillTxt}>{profile?.badgePillTxt}</Text>
             </View>
           </View>
         </View>
@@ -49,17 +52,17 @@ export const CustomerProfile: React.FC = () => {
         {/* 3 Metrics Row */}
         <View style={styles.metricsRow}>
           <View style={styles.metricCard}>
-            <Text style={[styles.metricVal, { color: '#10B981' }]}>43.4 kg</Text>
+            <Text style={[styles.metricVal, { color: '#10B981' }]}>{profile?.recycledKg ?? 0} kg</Text>
             <Text style={styles.metricLabel}>Recycled</Text>
           </View>
 
           <View style={styles.metricCard}>
-            <Text style={[styles.metricVal, { color: '#0284C7' }]}>24</Text>
+            <Text style={[styles.metricVal, { color: '#0284C7' }]}>{profile?.completedPickups ?? 0}</Text>
             <Text style={styles.metricLabel}>Pickups</Text>
           </View>
 
           <View style={styles.metricCard}>
-            <Text style={[styles.metricVal, { color: '#F59E0B' }]}>#12</Text>
+            <Text style={[styles.metricVal, { color: '#F59E0B' }]}>{profile?.cityRank ? `#${profile.cityRank}` : '—'}</Text>
             <Text style={styles.metricLabel}>City Rank</Text>
           </View>
         </View>
@@ -71,14 +74,17 @@ export const CustomerProfile: React.FC = () => {
         </View>
 
         <View style={styles.badgesGrid}>
-          {mockBadgesList.map((badge) => (
-            <Card key={badge.id} style={styles.badgeCard}>
+          {error && <Text style={{ color: '#DC2626' }}>⚠️ {error}</Text>}
+          {badges.map((badge) => (
+            <TouchableOpacity key={badge.id} activeOpacity={0.85} onPress={() => navigation?.navigate('HomeTab', { screen: 'BadgeDetails', params: { badge } })}>
+            <Card style={styles.badgeCard}>
               <View style={{ opacity: badge.isUnlocked ? 1 : 0.45, alignItems: 'center' }}>
                 <Text style={styles.badgeIcon}>{badge.icon}</Text>
                 <Text style={styles.badgeName}>{badge.name}</Text>
-                <Text style={styles.badgeDesc}>{badge.description}</Text>
+                <Text style={styles.badgeDesc}>{badge.isUnlocked ? badge.description : `${badge.progressKg ?? 0} / ${badge.requiredRecycledKg} kg`}</Text>
               </View>
             </Card>
+            </TouchableOpacity>
           ))}
         </View>
 
@@ -90,6 +96,22 @@ export const CustomerProfile: React.FC = () => {
 
         {/* Settings Action List */}
         <View style={styles.optionsGroup}>
+          {[
+            { label: 'Edit Profile', sub: 'Name, email & phone', icon: 'person-outline', screen: 'EditProfile' },
+            { label: 'Saved Addresses', sub: 'Doorstep pickup locations', icon: 'location-outline', screen: 'SavedAddresses' },
+            { label: 'Recycling History', sub: 'All your pickup requests', icon: 'time-outline', screen: 'History' }
+          ].map((o) => (
+            <TouchableOpacity key={o.screen} style={styles.optionRow} onPress={() => navigation?.navigate('HomeTab', { screen: o.screen })} activeOpacity={0.8}>
+              <View style={[styles.optionIconBg, { backgroundColor: '#ECFDF5' }]}>
+                <Ionicons name={o.icon as any} size={20} color="#10B981" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.optionTitle}>{o.label}</Text>
+                <Text style={styles.optionSub}>{o.sub}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
+            </TouchableOpacity>
+          ))}
           <TouchableOpacity
             style={styles.optionRow}
             onPress={logout}

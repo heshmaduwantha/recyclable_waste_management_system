@@ -21,13 +21,8 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
     try {
       const data = await apiCall<any[]>('/notifications');
       setNotifications(data);
-    } catch {
-      setNotifications([
-        { id: '1', title: '⚠️ Driver Rejected Job PU-8821', message: 'Suresh Kumar rejected pickup (Vehicle breakdown). Comment saved for Admin.', timestamp: '5m ago', category: 'flagged', isRead: false },
-        { id: '2', title: '🎁 Voucher Redeemed', message: 'Kasun Perera redeemed 100 Eco Points for Dialog LKR 100 Reload.', timestamp: '15m ago', category: 'rewards', isRead: false },
-        { id: '3', title: '🚚 Unassigned Pickup Request', message: 'New pickup PU-8822 submitted for Havelock Road. Requires driver allocation.', timestamp: '30m ago', category: 'pending', isRead: false },
-        { id: '4', title: '✅ Pickup Completed', message: 'Collector Saman verified 12.5 kg plastic waste for PU-8820 (+625 pts credited).', timestamp: '1h ago', category: 'ops', isRead: true }
-      ]);
+    } catch (err) {
+      console.error('Failed to load notifications:', err);
     }
   }
 

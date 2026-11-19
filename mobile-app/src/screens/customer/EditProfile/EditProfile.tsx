@@ -5,12 +5,30 @@ import { Input } from '../../../common/Input/Input';
 import { Button } from '../../../common/Button/Button';
 import { useAuth } from '../../../store/auth/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
+import { customerService } from '../../../services/customer.service';
 
 export const CustomerEditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const { user } = useAuth();
-  const [name, setName] = useState(user?.name || 'Priya Sharma');
-  const [email, setEmail] = useState(user?.email || 'priya@gmail.com');
-  const [phone, setPhone] = useState(user?.phone || '+94 77 123 4567');
+  const { user, updateUser } = useAuth();
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const initials = name.split(' ').filter(Boolean).map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      await customerService.updateProfile({ name: name.trim(), email: email.trim(), phone: phone.trim() });
+      updateUser({ name: name.trim(), email: email.trim(), phone: phone.trim() });
+      navigation.goBack();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
@@ -20,7 +38,7 @@ export const CustomerEditProfile: React.FC<{ navigation: any }> = ({ navigation 
         {/* Avatar Edit Section */}
         <View style={styles.avatarSection}>
           <View style={styles.avatarWrapper}>
-            <Text style={styles.avatarTxt}>PS</Text>
+            <Text style={styles.avatarTxt}>{initials}</Text>
             <TouchableOpacity style={styles.cameraBadge}>
               <Ionicons name="camera" size={16} color="#FFFFFF" />
             </TouchableOpacity>
@@ -33,7 +51,8 @@ export const CustomerEditProfile: React.FC<{ navigation: any }> = ({ navigation 
         <Input label="Email Address" value={email} onChangeText={setEmail} keyboardType="email-address" />
         <Input label="Phone Number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
 
-        <Button title="Save Changes" onPress={() => navigation.goBack()} style={{ marginTop: 24 }} />
+        {error && <Text style={{ color: '#DC2626', fontWeight: '600', marginTop: 12 }}>⚠️ {error}</Text>}
+        <Button title="Save Changes" onPress={handleSave} loading={saving} disabled={saving} style={{ marginTop: 24 }} />
       </View>
     </ScrollView>
   );

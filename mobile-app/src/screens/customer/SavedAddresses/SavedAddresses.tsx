@@ -1,15 +1,49 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Header } from '../../../common/Header/Header';
 import { Card } from '../../../common/Card/Card';
 import { Button } from '../../../common/Button/Button';
+import { Input } from '../../../common/Input/Input';
 import { Ionicons } from '@expo/vector-icons';
+import { useApiData } from '../../../hooks/useApiData';
+import { customerService } from '../../../services/customer.service';
 
 export const CustomerSavedAddresses: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [addresses] = useState([
-    { id: '1', title: 'Home Address', street: '45 Ward Place', city: 'Colombo 07', isDefault: true },
-    { id: '2', title: 'Office / Business', street: '78 Duplication Road', city: 'Colombo 03', isDefault: false }
-  ]);
+  const { data: addresses, error, reload } = useApiData(customerService.addresses, []);
+  const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState('');
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const run = async (fn: () => Promise<unknown>) => {
+    try {
+      await fn();
+      await reload();
+    } catch (e) {
+      Alert.alert('Error', (e as Error).message);
+    }
+  };
+
+  const handleAdd = async () => {
+    if (!title.trim() || !street.trim() || !city.trim()) {
+      setFormError('Title, street and city are required.');
+      return;
+    }
+    setSaving(true);
+    setFormError(null);
+    try {
+      await customerService.addAddress({ title: title.trim(), street: street.trim(), city: city.trim() });
+      setTitle(''); setStreet(''); setCity('');
+      setShowForm(false);
+      await reload();
+    } catch (e) {
+      setFormError((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
@@ -23,7 +57,8 @@ export const CustomerSavedAddresses: React.FC<{ navigation: any }> = ({ navigati
           </View>
         </View>
 
-        {addresses.map((addr) => (
+        {error && <Text style={{ color: '#DC2626' }}>⚠️ {error}</Text>}
+        {(addresses || []).map((addr) => (
           <Card key={addr.id} style={styles.addrCard}>
             <View style={styles.cardTopRow}>
               <View style={styles.iconBg}>
@@ -40,16 +75,36 @@ export const CustomerSavedAddresses: React.FC<{ navigation: any }> = ({ navigati
                   )}
                 </View>
                 <Text style={styles.streetTxt}>{addr.street}, {addr.city}</Text>
+                {!addr.isDefault && (
+                  <TouchableOpacity onPress={() => run(() => customerService.setDefaultAddress(addr.id))}>
+                    <Text style={{ color: '#10B981', fontWeight: '700', marginTop: 6 }}>Set as default</Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
-              <TouchableOpacity style={styles.editBtn}>
-                <Ionicons name="create-outline" size={20} color="#94A3B8" />
+              <TouchableOpacity style={styles.editBtn} onPress={() => run(() => customerService.deleteAddress(addr.id))}>
+                <Ionicons name="trash-outline" size={20} color="#EF4444" />
               </TouchableOpacity>
             </View>
           </Card>
         ))}
 
-        <Button title="+ Add New Address" onPress={() => { }} style={{ marginTop: 16 }} />
+        {showForm && (
+          <Card style={styles.addrCard}>
+            <Input label="LABEL" value={title} onChangeText={setTitle} placeholder="e.g. Home, Office" />
+            <Input label="STREET" value={street} onChangeText={setStreet} placeholder="45 Ward Place" />
+            <Input label="CITY" value={city} onChangeText={setCity} placeholder="Colombo 07" />
+            {formError && <Text style={{ color: '#DC2626', fontWeight: '600' }}>⚠️ {formError}</Text>}
+            <Button title="Save Address" onPress={handleAdd} loading={saving} disabled={saving} style={{ marginTop: 8 }} />
+          </Card>
+        )}
+
+        <Button
+          title={showForm ? 'Cancel' : '+ Add New Address'}
+          variant={showForm ? 'outline' : 'primary'}
+          onPress={() => setShowForm(!showForm)}
+          style={{ marginTop: 16 }}
+        />
       </View>
     </ScrollView>
   );

@@ -2,8 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Header } from '../../../common/Header/Header';
 import { Button } from '../../../common/Button/Button';
+import { useApiData } from '../../../hooks/useApiData';
+import { pickerService, formatLkr } from '../../../services/picker.service';
 
 export const PickerShiftSummary: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { data: stats } = useApiData(pickerService.stats, []);
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
       <Header title="Shift Summary" subtitle="End of duty collection report" showBack onBackPress={() => navigation.goBack()} />
@@ -11,23 +14,23 @@ export const PickerShiftSummary: React.FC<{ navigation: any }> = ({ navigation }
       <View style={styles.body}>
         {/* Shift Hero Summary */}
         <View style={styles.heroCard}>
-          <Text style={styles.shiftTitle}>Shift Completed Successfully!</Text>
-          <Text style={styles.shiftSub}>Aug 06, 2026 · 08:00 AM - 04:30 PM</Text>
+          <Text style={styles.shiftTitle}>Today's Shift Summary</Text>
+          <Text style={styles.shiftSub}>{new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })} · {stats?.activeJobs ?? 0} jobs still open</Text>
 
           <View style={styles.grid}>
             <View style={styles.gridItem}>
-              <Text style={styles.gridVal}>71.5 kg</Text>
+              <Text style={styles.gridVal}>{stats?.today.kg ?? 0} kg</Text>
 
               <Text style={styles.gridSub}>Total Payload</Text>
             </View>
 
             <View style={styles.gridItem}>
-              <Text style={styles.gridVal}>5</Text>
+              <Text style={styles.gridVal}>{stats?.today.jobs ?? 0}</Text>
               <Text style={styles.gridSub}>Jobs Done</Text>
             </View>
 
             <View style={styles.gridItem}>
-              <Text style={styles.gridVal}>LKR 3,305</Text>
+              <Text style={styles.gridVal}>{formatLkr(stats?.today.earningsLkr ?? 0)}</Text>
               <Text style={styles.gridSub}>Commission</Text>
             </View>
           </View>

@@ -12,13 +12,23 @@ export const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('priya@gmail.com');
   const [password, setPassword] = useState('password123');
   const [rememberMe, setRememberMe] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      setError('Please enter your email and password.');
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
     try {
-      const userObj = await authService.login(email, selectedRole);
+      const userObj = await authService.login(email, password, selectedRole);
       login(selectedRole, userObj);
     } catch (err) {
-      login(selectedRole);
+      setError((err as Error).message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -101,9 +111,13 @@ export const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
+        {error && <Text style={{ color: '#DC2626', fontSize: 13, fontWeight: '600', marginBottom: 4 }}>⚠️ {error}</Text>}
+
         <Button
           title="Sign In"
           onPress={handleLogin}
+          loading={submitting}
+          disabled={submitting}
           themeRole={selectedRole === 'picker' ? 'picker' : 'customer'}
           style={{ marginTop: 8 }}
         />

@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Input } from '../../../common/Input/Input';
 import { Button } from '../../../common/Button/Button';
-import { useAuth } from '../../../store/auth/AuthContext';
 
-export const OTP: React.FC<{ navigation: any }> = () => {
-  const { login } = useAuth();
+// OTP delivery is not implemented server-side yet; this screen must not grant a session.
+export const OTP: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [code, setCode] = useState('');
 
   return (
@@ -24,8 +23,8 @@ export const OTP: React.FC<{ navigation: any }> = () => {
       />
 
       <Button
-        title="Verify & Enter App"
-        onPress={() => login('customer')}
+        title="Continue to Sign In"
+        onPress={() => navigation.navigate('Login')}
         themeRole="customer"
         style={{ width: '100%', marginTop: 16 }}
       />

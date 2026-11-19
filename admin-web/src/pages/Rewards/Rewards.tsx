@@ -35,13 +35,17 @@ export const Rewards: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     async function loadData() {
-      const [rewardsList, ratesList] = await Promise.all([
-        rewardService.getRewards(),
-        fetchMaterialRates()
-      ]);
-      if (isMounted) {
-        setRewards(rewardsList);
-        setMaterialRates(ratesList);
+      try {
+        const [rewardsList, ratesList] = await Promise.all([
+          rewardService.getRewards(),
+          fetchMaterialRates()
+        ]);
+        if (isMounted) {
+          setRewards(rewardsList);
+          setMaterialRates(ratesList);
+        }
+      } catch (err) {
+        console.error('Failed to load rewards:', err);
       }
     }
     loadData();
@@ -49,17 +53,7 @@ export const Rewards: React.FC = () => {
   }, []);
 
   async function fetchMaterialRates(): Promise<MaterialRateItem[]> {
-    try {
-      return await apiCall<MaterialRateItem[]>('/materials/rates');
-    } catch {
-      return [
-        { id: 'MAT-01', category: 'plastic', materialName: 'Plastic (PET Bottles)', pricePerKgLkr: 120, pointsPerKg: 50, icon: '🧴' },
-        { id: 'MAT-02', category: 'paper', materialName: 'Paper & Cardboard', pricePerKgLkr: 60, pointsPerKg: 25, icon: '📰' },
-        { id: 'MAT-03', category: 'metal', materialName: 'Metal & Steel Scrap', pricePerKgLkr: 150, pointsPerKg: 70, icon: '⚙️' },
-        { id: 'MAT-04', category: 'glass', materialName: 'Glass Bottles & Jars', pricePerKgLkr: 30, pointsPerKg: 15, icon: '🫙' },
-        { id: 'MAT-05', category: 'e-waste', materialName: 'E-Waste & Gadgets', pricePerKgLkr: 250, pointsPerKg: 100, icon: '💻' }
-      ];
-    }
+    return apiCall<MaterialRateItem[]>('/materials/rates');
   }
 
   const handleStartEdit = (rate: MaterialRateItem) => {
@@ -81,7 +75,7 @@ export const Rewards: React.FC = () => {
       });
       setMaterialRates(materialRates.map(m => m.id === id ? { ...m, pricePerKgLkr: editPrice, pointsPerKg: editPoints } : m));
     } catch (err) {
-      setMaterialRates(materialRates.map(m => m.id === id ? { ...m, pricePerKgLkr: editPrice, pointsPerKg: editPoints } : m));
+      alert(`Could not update rate: ${(err as Error).message}`);
     } finally {
       setSaving(false);
       setEditingId(null);
@@ -96,11 +90,11 @@ export const Rewards: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: title || 'LKR 250 Reload Voucher',
-          description: description || 'Instant mobile reload voucher for all networks',
+          title,
+          description,
           pointsRequired,
-          partnerName: partnerName || 'Dialog Axiata',
-          expiryDate: expiryDate || '2026-12-31'
+          partnerName,
+          expiryDate: expiryDate || undefined
         })
       });
       setRewards([newReward, ...rewards]);
@@ -109,7 +103,7 @@ export const Rewards: React.FC = () => {
       setDescription('');
       setPartnerName('');
     } catch (err) {
-      console.warn('Voucher creation error:', err);
+      alert(`Could not create reward: ${(err as Error).message}`);
     } finally {
       setSubmittingVoucher(false);
     }
