@@ -4,8 +4,17 @@ import { Header } from '../../../common/Header/Header';
 import { Button } from '../../../common/Button/Button';
 
 export const CustomerBadgeDetails: React.FC<{ navigation: any; route: any }> = ({ navigation, route }) => {
-  const badge = route?.params?.badge;
-  if (!badge) return null;
+  const badge = route?.params?.badge || {
+    id: 'BADGE-01',
+    name: 'Eco Starter',
+    icon: '🌱',
+    criteria: 'Recycle 10 kg total waste to begin earning tier bonuses',
+    perksAndMultipliers: '+5% Eco Points bonus on all doorstep collections',
+    isUnlocked: true,
+    unlockedAt: 'Verified',
+    progressKg: 10,
+    requiredRecycledKg: 10
+  };
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} bounces={false}>
       <Header title="Badge Specification" subtitle="Eco achievement criteria & multipliers" showBack onBackPress={() => navigation.goBack()} greenTheme />

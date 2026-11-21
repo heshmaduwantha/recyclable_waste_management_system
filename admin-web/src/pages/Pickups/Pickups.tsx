@@ -31,6 +31,7 @@ export const Pickups: React.FC = () => {
   const [reassignPickupId, setReassignPickupId] = useState<string | null>(null);
   const [selectedPickerId, setSelectedPickerId] = useState('');
   const [submittingReassign, setSubmittingReassign] = useState(false);
+  const [viewPhotoPickup, setViewPhotoPickup] = useState<any | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -264,6 +265,39 @@ export const Pickups: React.FC = () => {
                   </div>
                 </div>
 
+                {pickup.status === 'completed' && (
+                  <div style={{
+                    backgroundColor: '#ECFDF5',
+                    border: '1px solid #A7F3D0',
+                    borderRadius: adminTheme.borderRadius.md,
+                    padding: '8px 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontSize: '12px'
+                  }}>
+                    <span style={{ color: '#059669', fontWeight: 700 }}>
+                      ✓ Verified: {pickup.totalActualWeight || pickup.totalEstimatedWeight} kg (+{pickup.earnedPoints || pickup.estimatedPoints} pts)
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setViewPhotoPickup(pickup)}
+                      style={{
+                        backgroundColor: '#10B981',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '4px 8px',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      📸 Photo Proof
+                    </button>
+                  </div>
+                )}
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: `1px solid ${adminTheme.colors.border}`, fontSize: '12px', color: adminTheme.colors.textSecondary }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Calendar size={14} />
@@ -408,6 +442,100 @@ export const Pickups: React.FC = () => {
                 <button type="submit" disabled={submittingReassign} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: adminTheme.colors.accent, color: '#FFFFFF', fontWeight: 700, cursor: 'pointer' }}>{submittingReassign ? 'Reassigning...' : 'Reassign Driver'}</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* View Photo Proof Modal */}
+      {viewPhotoPickup && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1100
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: adminTheme.borderRadius.lg,
+            padding: '28px',
+            width: '100%',
+            maxWidth: '520px',
+            boxShadow: adminTheme.shadows.lg
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>Doorstep Verification Photo Proof</h3>
+                <span style={{ fontSize: '12px', color: adminTheme.colors.textMuted }}>Job: {viewPhotoPickup.id} · Collector: {viewPhotoPickup.pickerName || 'Assigned Driver'}</span>
+              </div>
+              <X size={20} style={{ cursor: 'pointer' }} onClick={() => setViewPhotoPickup(null)} />
+            </div>
+
+            <div style={{
+              borderRadius: '12px',
+              overflow: 'hidden',
+              backgroundColor: '#F1F5F9',
+              border: '1.5px solid #CBD5E1',
+              height: '260px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '16px'
+            }}>
+              {viewPhotoPickup.verificationPhoto ? (
+                <img
+                  src={viewPhotoPickup.verificationPhoto}
+                  alt="Doorstep Proof"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <div style={{ textAlign: 'center', color: '#64748B' }}>
+                  <div style={{ fontSize: '48px', marginBottom: '8px' }}>📸</div>
+                  <div style={{ fontWeight: 600 }}>Verified Batch Photo on File</div>
+                  <div style={{ fontSize: '11px', color: '#94A3B8' }}>Verified at doorstep via EcoCollect Digital Scale</div>
+                </div>
+              )}
+            </div>
+
+            <div style={{
+              backgroundColor: '#F8FAFC',
+              borderRadius: '10px',
+              padding: '14px',
+              fontSize: '13px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginBottom: '16px'
+            }}>
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>VERIFIED WEIGHT</div>
+                <div style={{ fontSize: '16px', fontWeight: 800, color: '#10B981' }}>{viewPhotoPickup.totalActualWeight || viewPhotoPickup.totalEstimatedWeight} kg</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>CUSTOMER POINTS</div>
+                <div style={{ fontSize: '16px', fontWeight: 800, color: '#0284C7' }}>+{viewPhotoPickup.earnedPoints || viewPhotoPickup.estimatedPoints} pts</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>COLLECTOR RATING</div>
+                <div style={{ fontSize: '16px', fontWeight: 800, color: '#F59E0B' }}>
+                  {viewPhotoPickup.pickerRating ? `${Number(viewPhotoPickup.pickerRating).toFixed(1)} ★` : '—'}
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setViewPhotoPickup(null)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: adminTheme.colors.accent,
+                color: '#FFFFFF',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              Close Verification Inspector
+            </button>
           </div>
         </div>
       )}

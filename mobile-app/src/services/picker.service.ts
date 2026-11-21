@@ -22,7 +22,8 @@ export const pickerService = {
   jobs: () => apiCall<PickerJob[]>('/picker/jobs'),
   accept: (id: string) => apiPost(`/picker/jobs/${id}/accept`, undefined, 'PUT'),
   reject: (id: string, reason: string) => apiPost(`/picker/jobs/${id}/reject`, { reason }, 'PUT'),
-  complete: (id: string, actualWeightKg: number) => apiPost<CompleteResult>(`/picker/jobs/${id}/complete`, { actualWeightKg }, 'PUT'),
+  complete: (id: string, actualWeightKg: number, verificationPhoto?: string) =>
+    apiPost<CompleteResult>(`/picker/jobs/${id}/complete`, { actualWeightKg, verificationPhoto }, 'PUT'),
   history: () => apiCall<PickerHistoryItem[]>('/picker/history'),
   stats: () => apiCall<PickerStats>('/picker/stats'),
 };

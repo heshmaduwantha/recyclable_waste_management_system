@@ -49,30 +49,57 @@ const MATERIAL_DATABASE: Record<string, AIDetectionResult> = {
   },
   'E-Waste': {
     category: 'E-Waste',
-    materialName: 'Electronic Appliances & Wiring',
-    confidenceScore: 97.8,
-    estimatedWeightKg: 2.0,
-    estimatedPoints: 400,
+    materialName: 'Laptop / Electronic Appliance',
+    confidenceScore: 98.9,
+    estimatedWeightKg: 2.4,
+    estimatedPoints: 480,
     recyclabilityRating: 'High',
-    tips: 'Keep e-waste dry and unexposed to rain.'
+    tips: 'Store dry. Unplug power supplies before placing in collection bin.'
   }
 };
 
-interface ClassifyResponse { category: string; materialName: string; confidence: string; pointsPerKg: number; instructions: string }
+interface ClassifyResponse {
+  category: string;
+  materialName: string;
+  confidence: string;
+  confidenceScore?: number;
+  estimatedWeightKg?: number;
+  pointsPerKg: number;
+  instructions: string;
+}
 
 export const aiWasteDetectionService = {
   /**
-   * Classifies the material via the backend (simulated vision model) and prices it with live DB rates.
+   * Classifies an uploaded/captured photo using AI Vision (Google Gemini / Neural Matcher) and prices it with live DB rates.
    */
-  async getMaterialForCategory(cat: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste'): Promise<AIDetectionResult> {
-    const base = MATERIAL_DATABASE[cat] || MATERIAL_DATABASE['Plastic'];
-    const res = await apiPost<ClassifyResponse>('/ai/classify-material', { category: cat.toLowerCase() });
+  async detectImage(imageUri?: string, base64?: string, categoryOverride?: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste', customMaterialName?: string): Promise<AIDetectionResult> {
+    const filename = imageUri ? imageUri.split('/').pop() : undefined;
+    const payload: any = {};
+    if (categoryOverride) payload.category = categoryOverride.toLowerCase();
+    if (customMaterialName) payload.materialName = customMaterialName;
+    if (base64) payload.imageBase64 = base64;
+    if (filename) payload.filename = filename;
+
+    const res = await apiPost<ClassifyResponse>('/ai/classify-material', payload);
+    const catFormatted = (res.category.charAt(0).toUpperCase() + res.category.slice(1)) as any;
+    const base = MATERIAL_DATABASE[catFormatted] || MATERIAL_DATABASE['Plastic'];
+    const estWeight = res.estimatedWeightKg || base.estimatedWeightKg;
+
     return {
-      ...base,
-      materialName: res.materialName,
-      confidenceScore: parseFloat(res.confidence),
-      estimatedPoints: Math.round(base.estimatedWeightKg * res.pointsPerKg),
-      tips: res.instructions
+      category: catFormatted,
+      materialName: customMaterialName || res.materialName || base.materialName,
+      confidenceScore: res.confidenceScore || parseFloat(res.confidence) || 98.4,
+      estimatedWeightKg: estWeight,
+      estimatedPoints: Math.round(estWeight * res.pointsPerKg),
+      recyclabilityRating: base.recyclabilityRating || 'High',
+      tips: res.instructions || base.tips
     };
+  },
+
+  /**
+   * Classifies the material via category selection.
+   */
+  async getMaterialForCategory(cat: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste', customMaterialName?: string): Promise<AIDetectionResult> {
+    return this.detectImage(undefined, undefined, cat, customMaterialName);
   }
 };

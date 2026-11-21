@@ -1,0 +1,1002 @@
+[
+  {
+    "id": "WAL-0001",
+    "userId": "CUST-0001",
+    "customerName": "Dinesh Mendis",
+    "totalPoints": 5590,
+    "cashEquivalentLkr": 1118,
+    "totalEarnedPoints": 6340,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.121Z"
+  },
+  {
+    "id": "WAL-0002",
+    "userId": "CUST-0002",
+    "customerName": "Supun de Silva",
+    "totalPoints": 5022,
+    "cashEquivalentLkr": 1004.4,
+    "totalEarnedPoints": 6022,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.121Z"
+  },
+  {
+    "id": "WAL-0003",
+    "userId": "CUST-0003",
+    "customerName": "Nimalee Silva",
+    "totalPoints": 1232,
+    "cashEquivalentLkr": 246.4,
+    "totalEarnedPoints": 2732,
+    "totalRedeemedPoints": 1500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0004",
+    "userId": "CUST-0004",
+    "customerName": "Sachini Rajapaksa",
+    "totalPoints": 2330,
+    "cashEquivalentLkr": 466,
+    "totalEarnedPoints": 2830,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0005",
+    "userId": "CUST-0005",
+    "customerName": "Chamari Abeysekera",
+    "totalPoints": 2710,
+    "cashEquivalentLkr": 542,
+    "totalEarnedPoints": 3210,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0006",
+    "userId": "CUST-0006",
+    "customerName": "Lahiru Wijesinghe",
+    "totalPoints": 4455,
+    "cashEquivalentLkr": 891,
+    "totalEarnedPoints": 4705,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0007",
+    "userId": "CUST-0007",
+    "customerName": "Amila Gunasekara",
+    "totalPoints": 2591,
+    "cashEquivalentLkr": 518.2,
+    "totalEarnedPoints": 3591,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0008",
+    "userId": "CUST-0008",
+    "customerName": "Nalaka de Silva",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0009",
+    "userId": "CUST-0009",
+    "customerName": "Shalika Senanayake",
+    "totalPoints": 514,
+    "cashEquivalentLkr": 102.8,
+    "totalEarnedPoints": 2014,
+    "totalRedeemedPoints": 1500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0010",
+    "userId": "CUST-0010",
+    "customerName": "Priyanka Wickramasinghe",
+    "totalPoints": 1987,
+    "cashEquivalentLkr": 397.4,
+    "totalEarnedPoints": 2487,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0011",
+    "userId": "CUST-0011",
+    "customerName": "Supun Fernando",
+    "totalPoints": 600,
+    "cashEquivalentLkr": 120,
+    "totalEarnedPoints": 600,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0012",
+    "userId": "CUST-0012",
+    "customerName": "Buddhika Mendis",
+    "totalPoints": 1278,
+    "cashEquivalentLkr": 255.6,
+    "totalEarnedPoints": 1528,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0013",
+    "userId": "CUST-0013",
+    "customerName": "Dinesh Gunasekara",
+    "totalPoints": 554,
+    "cashEquivalentLkr": 110.8,
+    "totalEarnedPoints": 554,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0014",
+    "userId": "CUST-0014",
+    "customerName": "Supun de Silva",
+    "totalPoints": 4344,
+    "cashEquivalentLkr": 868.8,
+    "totalEarnedPoints": 5094,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0015",
+    "userId": "CUST-0015",
+    "customerName": "Shalika Mendis",
+    "totalPoints": 3109,
+    "cashEquivalentLkr": 621.8,
+    "totalEarnedPoints": 3359,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0016",
+    "userId": "CUST-0016",
+    "customerName": "Shalika Rajapaksa",
+    "totalPoints": 658,
+    "cashEquivalentLkr": 131.6,
+    "totalEarnedPoints": 658,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0017",
+    "userId": "CUST-0017",
+    "customerName": "Priyanka Alwis",
+    "totalPoints": 895,
+    "cashEquivalentLkr": 179,
+    "totalEarnedPoints": 2145,
+    "totalRedeemedPoints": 1250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0018",
+    "userId": "CUST-0018",
+    "customerName": "Nimalee Hettiarachchi",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0019",
+    "userId": "CUST-0019",
+    "customerName": "Gayani Dissanayake",
+    "totalPoints": 5077,
+    "cashEquivalentLkr": 1015.4,
+    "totalEarnedPoints": 6327,
+    "totalRedeemedPoints": 1250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0020",
+    "userId": "CUST-0020",
+    "customerName": "Thisara Wickramasinghe",
+    "totalPoints": 4580,
+    "cashEquivalentLkr": 916,
+    "totalEarnedPoints": 5330,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0021",
+    "userId": "CUST-0021",
+    "customerName": "Dilshan Jayasinghe",
+    "totalPoints": 1890,
+    "cashEquivalentLkr": 378,
+    "totalEarnedPoints": 2890,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0022",
+    "userId": "CUST-0022",
+    "customerName": "Gayani Jayasinghe",
+    "totalPoints": 1050,
+    "cashEquivalentLkr": 210,
+    "totalEarnedPoints": 1300,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0023",
+    "userId": "CUST-0023",
+    "customerName": "Dilshan Dissanayake",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0024",
+    "userId": "CUST-0024",
+    "customerName": "Damith Fernando",
+    "totalPoints": 3616,
+    "cashEquivalentLkr": 723.2,
+    "totalEarnedPoints": 4616,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0025",
+    "userId": "CUST-0025",
+    "customerName": "Ruwan Perera",
+    "totalPoints": 961,
+    "cashEquivalentLkr": 192.2,
+    "totalEarnedPoints": 1211,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0026",
+    "userId": "CUST-0026",
+    "customerName": "Malith Rathnayake",
+    "totalPoints": 1161,
+    "cashEquivalentLkr": 232.2,
+    "totalEarnedPoints": 1411,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0027",
+    "userId": "CUST-0027",
+    "customerName": "Kasun Alwis",
+    "totalPoints": 1687,
+    "cashEquivalentLkr": 337.4,
+    "totalEarnedPoints": 2437,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0028",
+    "userId": "CUST-0028",
+    "customerName": "Amila Jayawardena",
+    "totalPoints": 2638,
+    "cashEquivalentLkr": 527.6,
+    "totalEarnedPoints": 3138,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0029",
+    "userId": "CUST-0029",
+    "customerName": "Supun Wickramasinghe",
+    "totalPoints": 2333,
+    "cashEquivalentLkr": 466.6,
+    "totalEarnedPoints": 3083,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0030",
+    "userId": "CUST-0030",
+    "customerName": "Sachini Samarasinghe",
+    "totalPoints": 463,
+    "cashEquivalentLkr": 92.6,
+    "totalEarnedPoints": 1713,
+    "totalRedeemedPoints": 1250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0031",
+    "userId": "CUST-0031",
+    "customerName": "Gayani Karunaratne",
+    "totalPoints": 1304,
+    "cashEquivalentLkr": 260.8,
+    "totalEarnedPoints": 2054,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0032",
+    "userId": "CUST-0032",
+    "customerName": "Lahiru Silva",
+    "totalPoints": 3140,
+    "cashEquivalentLkr": 628,
+    "totalEarnedPoints": 4140,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0033",
+    "userId": "CUST-0033",
+    "customerName": "Damith Silva",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0034",
+    "userId": "CUST-0034",
+    "customerName": "Lahiru Samarasinghe",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0035",
+    "userId": "CUST-0035",
+    "customerName": "Priyanka Silva",
+    "totalPoints": 4295,
+    "cashEquivalentLkr": 859,
+    "totalEarnedPoints": 4545,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0036",
+    "userId": "CUST-0036",
+    "customerName": "Gayani Fernando",
+    "totalPoints": 690,
+    "cashEquivalentLkr": 138,
+    "totalEarnedPoints": 1190,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0037",
+    "userId": "CUST-0037",
+    "customerName": "Pradeep Alwis",
+    "totalPoints": 795,
+    "cashEquivalentLkr": 159,
+    "totalEarnedPoints": 795,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0038",
+    "userId": "CUST-0038",
+    "customerName": "Buddhika de Silva",
+    "totalPoints": 3531,
+    "cashEquivalentLkr": 706.2,
+    "totalEarnedPoints": 4031,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0039",
+    "userId": "CUST-0039",
+    "customerName": "Nimalee de Silva",
+    "totalPoints": 10,
+    "cashEquivalentLkr": 2,
+    "totalEarnedPoints": 1010,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0040",
+    "userId": "CUST-0040",
+    "customerName": "Tharindu Dissanayake",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0041",
+    "userId": "CUST-0041",
+    "customerName": "Chathuri Hettiarachchi",
+    "totalPoints": 5183,
+    "cashEquivalentLkr": 1036.6,
+    "totalEarnedPoints": 5433,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0042",
+    "userId": "CUST-0042",
+    "customerName": "Harshana Abeysekera",
+    "totalPoints": 226,
+    "cashEquivalentLkr": 45.2,
+    "totalEarnedPoints": 1726,
+    "totalRedeemedPoints": 1500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0043",
+    "userId": "CUST-0043",
+    "customerName": "Lakshan Dissanayake",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0044",
+    "userId": "CUST-0044",
+    "customerName": "Sachini Perera",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0045",
+    "userId": "CUST-0045",
+    "customerName": "Lahiru Karunaratne",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0046",
+    "userId": "CUST-0046",
+    "customerName": "Janaka Wickramasinghe",
+    "totalPoints": 841,
+    "cashEquivalentLkr": 168.2,
+    "totalEarnedPoints": 1841,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0047",
+    "userId": "CUST-0047",
+    "customerName": "Nimalee Samarasinghe",
+    "totalPoints": 3687,
+    "cashEquivalentLkr": 737.4,
+    "totalEarnedPoints": 4187,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0048",
+    "userId": "CUST-0048",
+    "customerName": "Janaka Bandara",
+    "totalPoints": 1742,
+    "cashEquivalentLkr": 348.4,
+    "totalEarnedPoints": 2492,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0049",
+    "userId": "CUST-0049",
+    "customerName": "Tharindu Samarasinghe",
+    "totalPoints": 166,
+    "cashEquivalentLkr": 33.2,
+    "totalEarnedPoints": 1166,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0050",
+    "userId": "CUST-0050",
+    "customerName": "Tharindu Senanayake",
+    "totalPoints": 2883,
+    "cashEquivalentLkr": 576.6,
+    "totalEarnedPoints": 3133,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0051",
+    "userId": "CUST-0051",
+    "customerName": "Shalika Jayawardena",
+    "totalPoints": 743,
+    "cashEquivalentLkr": 148.6,
+    "totalEarnedPoints": 993,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0052",
+    "userId": "CUST-0052",
+    "customerName": "Nimalee Karunaratne",
+    "totalPoints": 3992,
+    "cashEquivalentLkr": 798.4,
+    "totalEarnedPoints": 4492,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0053",
+    "userId": "CUST-0053",
+    "customerName": "Damith Dissanayake",
+    "totalPoints": 776,
+    "cashEquivalentLkr": 155.2,
+    "totalEarnedPoints": 1526,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0054",
+    "userId": "CUST-0054",
+    "customerName": "Nalaka Karunaratne",
+    "totalPoints": 4105,
+    "cashEquivalentLkr": 821,
+    "totalEarnedPoints": 5105,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.122Z"
+  },
+  {
+    "id": "WAL-0055",
+    "userId": "CUST-0055",
+    "customerName": "Shenali Abeysekera",
+    "totalPoints": 868,
+    "cashEquivalentLkr": 173.6,
+    "totalEarnedPoints": 868,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0056",
+    "userId": "CUST-0056",
+    "customerName": "Dinesh Abeysekera",
+    "totalPoints": 660,
+    "cashEquivalentLkr": 132,
+    "totalEarnedPoints": 660,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0057",
+    "userId": "CUST-0057",
+    "customerName": "Janaka Karunaratne",
+    "totalPoints": 3571,
+    "cashEquivalentLkr": 714.2,
+    "totalEarnedPoints": 4821,
+    "totalRedeemedPoints": 1250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0058",
+    "userId": "CUST-0058",
+    "customerName": "Amila Fernando",
+    "totalPoints": 5306,
+    "cashEquivalentLkr": 1061.2,
+    "totalEarnedPoints": 5806,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0059",
+    "userId": "CUST-0059",
+    "customerName": "Damith Karunaratne",
+    "totalPoints": 2584,
+    "cashEquivalentLkr": 516.8,
+    "totalEarnedPoints": 3084,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0060",
+    "userId": "CUST-0060",
+    "customerName": "Damith Fernando",
+    "totalPoints": 2860,
+    "cashEquivalentLkr": 572,
+    "totalEarnedPoints": 3860,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0061",
+    "userId": "CUST-0061",
+    "customerName": "Nimalee Abeysekera",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0062",
+    "userId": "CUST-0062",
+    "customerName": "Gayani Samarasinghe",
+    "totalPoints": 1186,
+    "cashEquivalentLkr": 237.2,
+    "totalEarnedPoints": 2436,
+    "totalRedeemedPoints": 1250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0063",
+    "userId": "CUST-0063",
+    "customerName": "Thisara Alwis",
+    "totalPoints": 1695,
+    "cashEquivalentLkr": 339,
+    "totalEarnedPoints": 2445,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0064",
+    "userId": "CUST-0064",
+    "customerName": "Dinesh Hettiarachchi",
+    "totalPoints": 4336,
+    "cashEquivalentLkr": 867.2,
+    "totalEarnedPoints": 5336,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0065",
+    "userId": "CUST-0065",
+    "customerName": "Sachini Abeysekera",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0066",
+    "userId": "CUST-0066",
+    "customerName": "Buddhika Alwis",
+    "totalPoints": 313,
+    "cashEquivalentLkr": 62.6,
+    "totalEarnedPoints": 1313,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0067",
+    "userId": "CUST-0067",
+    "customerName": "Nimalee Silva",
+    "totalPoints": 4673,
+    "cashEquivalentLkr": 934.6,
+    "totalEarnedPoints": 4923,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0068",
+    "userId": "CUST-0068",
+    "customerName": "Harshana de Silva",
+    "totalPoints": 3700,
+    "cashEquivalentLkr": 740,
+    "totalEarnedPoints": 4450,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0069",
+    "userId": "CUST-0069",
+    "customerName": "Nimalee Alwis",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0070",
+    "userId": "CUST-0070",
+    "customerName": "Dilshan Alwis",
+    "totalPoints": 2390,
+    "cashEquivalentLkr": 478,
+    "totalEarnedPoints": 2640,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0071",
+    "userId": "CUST-0071",
+    "customerName": "Dilshan de Silva",
+    "totalPoints": 2259,
+    "cashEquivalentLkr": 451.8,
+    "totalEarnedPoints": 3259,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0072",
+    "userId": "CUST-0072",
+    "customerName": "Kasun Mendis",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0073",
+    "userId": "CUST-0073",
+    "customerName": "Amila Fernando",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0074",
+    "userId": "CUST-0074",
+    "customerName": "Dilshan Alwis",
+    "totalPoints": 2720,
+    "cashEquivalentLkr": 544,
+    "totalEarnedPoints": 2970,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0075",
+    "userId": "CUST-0075",
+    "customerName": "Lakshan Dissanayake",
+    "totalPoints": 7350,
+    "cashEquivalentLkr": 1470,
+    "totalEarnedPoints": 7600,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0076",
+    "userId": "CUST-0076",
+    "customerName": "Amila de Silva",
+    "totalPoints": 6133,
+    "cashEquivalentLkr": 1226.6,
+    "totalEarnedPoints": 6383,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0077",
+    "userId": "CUST-0077",
+    "customerName": "Ruwan Bandara",
+    "totalPoints": 1325,
+    "cashEquivalentLkr": 265,
+    "totalEarnedPoints": 2075,
+    "totalRedeemedPoints": 750,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0078",
+    "userId": "CUST-0078",
+    "customerName": "Chamari Senanayake",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0079",
+    "userId": "CUST-0079",
+    "customerName": "Gayani Senanayake",
+    "totalPoints": 2350,
+    "cashEquivalentLkr": 470,
+    "totalEarnedPoints": 2600,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0080",
+    "userId": "CUST-0080",
+    "customerName": "Janaka Samarasinghe",
+    "totalPoints": 5730,
+    "cashEquivalentLkr": 1146,
+    "totalEarnedPoints": 5980,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0081",
+    "userId": "CUST-0081",
+    "customerName": "Kasun Abeysekera",
+    "totalPoints": 3135,
+    "cashEquivalentLkr": 627,
+    "totalEarnedPoints": 3385,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0082",
+    "userId": "CUST-0082",
+    "customerName": "Thisara Perera",
+    "totalPoints": 630,
+    "cashEquivalentLkr": 126,
+    "totalEarnedPoints": 1130,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0083",
+    "userId": "CUST-0083",
+    "customerName": "Sachini Rajapaksa",
+    "totalPoints": 3911,
+    "cashEquivalentLkr": 782.2,
+    "totalEarnedPoints": 5161,
+    "totalRedeemedPoints": 1250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0084",
+    "userId": "CUST-0084",
+    "customerName": "Shenali Samarasinghe",
+    "totalPoints": 2457,
+    "cashEquivalentLkr": 491.4,
+    "totalEarnedPoints": 2707,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0085",
+    "userId": "CUST-0085",
+    "customerName": "Supun Alwis",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0086",
+    "userId": "CUST-0086",
+    "customerName": "Janaka Mendis",
+    "totalPoints": 465,
+    "cashEquivalentLkr": 93,
+    "totalEarnedPoints": 1465,
+    "totalRedeemedPoints": 1000,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0087",
+    "userId": "CUST-0087",
+    "customerName": "Anusha Dissanayake",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0088",
+    "userId": "CUST-0088",
+    "customerName": "Thisara Karunaratne",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0089",
+    "userId": "CUST-0089",
+    "customerName": "Ruwan Senanayake",
+    "totalPoints": 5365,
+    "cashEquivalentLkr": 1073,
+    "totalEarnedPoints": 5865,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0090",
+    "userId": "CUST-0090",
+    "customerName": "Lakshan Gunasekara",
+    "totalPoints": 1650,
+    "cashEquivalentLkr": 330,
+    "totalEarnedPoints": 2900,
+    "totalRedeemedPoints": 1250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0091",
+    "userId": "CUST-0091",
+    "customerName": "Buddhika Fernando",
+    "totalPoints": 6522,
+    "cashEquivalentLkr": 1304.4,
+    "totalEarnedPoints": 6772,
+    "totalRedeemedPoints": 250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0092",
+    "userId": "CUST-0092",
+    "customerName": "Lakshan Rajapaksa",
+    "totalPoints": 2134,
+    "cashEquivalentLkr": 426.8,
+    "totalEarnedPoints": 3384,
+    "totalRedeemedPoints": 1250,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0093",
+    "userId": "CUST-0093",
+    "customerName": "Priyanka Wijesinghe",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0094",
+    "userId": "CUST-0094",
+    "customerName": "Lahiru Rajapaksa",
+    "totalPoints": 1837,
+    "cashEquivalentLkr": 367.4,
+    "totalEarnedPoints": 3337,
+    "totalRedeemedPoints": 1500,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0095",
+    "userId": "CUST-0095",
+    "customerName": "Shalika Perera",
+    "totalPoints": 2196,
+    "cashEquivalentLkr": 439.2,
+    "totalEarnedPoints": 2696,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.123Z"
+  },
+  {
+    "id": "WAL-0096",
+    "userId": "CUST-0096",
+    "customerName": "Damith Wijesinghe",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.124Z"
+  },
+  {
+    "id": "WAL-0097",
+    "userId": "CUST-0097",
+    "customerName": "Thisara Perera",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.124Z"
+  },
+  {
+    "id": "WAL-0098",
+    "userId": "CUST-0098",
+    "customerName": "Nimalee Senanayake",
+    "totalPoints": 3495,
+    "cashEquivalentLkr": 699,
+    "totalEarnedPoints": 3995,
+    "totalRedeemedPoints": 500,
+    "updatedAt": "2026-11-09T15:20:01.124Z"
+  },
+  {
+    "id": "WAL-0099",
+    "userId": "CUST-0099",
+    "customerName": "Chamari Dissanayake",
+    "totalPoints": 825,
+    "cashEquivalentLkr": 165,
+    "totalEarnedPoints": 825,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.124Z"
+  },
+  {
+    "id": "WAL-0100",
+    "userId": "CUST-0100",
+    "customerName": "Chathuri Silva",
+    "totalPoints": 500,
+    "cashEquivalentLkr": 100,
+    "totalEarnedPoints": 500,
+    "totalRedeemedPoints": 0,
+    "updatedAt": "2026-11-09T15:20:01.124Z"
+  }
+]

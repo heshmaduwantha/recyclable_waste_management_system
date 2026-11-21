@@ -1,0 +1,83 @@
+{
+  "summary": {
+    "totalWasteCollectedKg": 2961.1,
+    "totalWasteTons": 2.96,
+    "co2EmissionsAvoidedKg": 8439.13,
+    "co2EmissionsAvoidedTons": 8.44,
+    "treesPlantedEquivalent": 703,
+    "municipalLandfillDiversionRatePercent": 96.7,
+    "totalActiveHouseholds": 100,
+    "totalActiveFleetPickers": 25,
+    "totalCompletedPickups": 150
+  },
+  "wasteByCategory": [
+    {
+      "category": "plastic",
+      "name": "Plastic (PET & HDPE)",
+      "totalWeightKg": 567.4,
+      "percentOfTotal": 19.2,
+      "co2AvoidedKg": 1617.1
+    },
+    {
+      "category": "metal",
+      "name": "Metal & Aluminum Cans",
+      "totalWeightKg": 547.8,
+      "percentOfTotal": 18.5,
+      "co2AvoidedKg": 1561.2
+    },
+    {
+      "category": "e-waste",
+      "name": "E-Waste & Small Gadgets",
+      "totalWeightKg": 449.9,
+      "percentOfTotal": 15.2,
+      "co2AvoidedKg": 1282.2
+    },
+    {
+      "category": "polythene",
+      "name": "Polythene & LDPE Wrap",
+      "totalWeightKg": 635.2,
+      "percentOfTotal": 21.5,
+      "co2AvoidedKg": 1810.3
+    },
+    {
+      "category": "paper",
+      "name": "Paper & Cardboard",
+      "totalWeightKg": 381.5,
+      "percentOfTotal": 12.9,
+      "co2AvoidedKg": 1087.3
+    },
+    {
+      "category": "glass",
+      "name": "Glass Bottles & Jars",
+      "totalWeightKg": 379.3,
+      "percentOfTotal": 12.8,
+      "co2AvoidedKg": 1081
+    }
+  ],
+  "monthlyTrends": [
+    {
+      "month": "2026-05",
+      "totalKg": 1240.5,
+      "co2AvoidedKg": 3535.4,
+      "pickupsCount": 52
+    },
+    {
+      "month": "2026-06",
+      "totalKg": 1680,
+      "co2AvoidedKg": 4788,
+      "pickupsCount": 68
+    },
+    {
+      "month": "2026-07",
+      "totalKg": 2150.2,
+      "co2AvoidedKg": 6128,
+      "pickupsCount": 84
+    },
+    {
+      "month": "2026-08",
+      "totalKg": 2890.8,
+      "co2AvoidedKg": 8238.7,
+      "pickupsCount": 110
+    }
+  ]
+}

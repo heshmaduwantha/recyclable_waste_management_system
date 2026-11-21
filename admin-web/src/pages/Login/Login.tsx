@@ -7,7 +7,7 @@ import { adminSession } from '../../services/session';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('admin@ecocollect.lk');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -75,6 +75,7 @@ export const Login: React.FC = () => {
             <input
               type="email"
               value={email}
+              placeholder="admin@ecocollect.lk"
               onChange={(e) => setEmail(e.target.value)}
               style={{ border: 'none', outline: 'none', width: '100%', fontSize: '14px' }}
               required

@@ -111,11 +111,11 @@ export const Rewards: React.FC = () => {
 
   return (
     <>
-      <Header title="Rewards & Material Unit Prices" subtitle="Configure material unit prices per 1kg in PostgreSQL DB & manage rewards store" />
+      <Header title="Rewards & Material Unit Prices" subtitle="Configure material unit prices per 1kg and manage eco-rewards store" />
 
       <main style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
         
-        {/* PostgreSQL Database Managed Material Unit Prices Table */}
+        {/* Material Unit Prices Table */}
         <div style={{
           backgroundColor: '#FFFFFF',
           borderRadius: adminTheme.borderRadius.lg,
@@ -128,11 +128,11 @@ export const Rewards: React.FC = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Scale size={20} color={adminTheme.colors.accent} />
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: adminTheme.colors.textPrimary }}>
-                  PostgreSQL Material Unit Prices (Per 1 Kg)
+                  Material Unit Pricing Schedule (Per 1 Kg)
                 </h3>
               </div>
               <span style={{ fontSize: '13px', color: adminTheme.colors.textSecondary, marginTop: '2px', display: 'block' }}>
-                Live backend unit prices for 1kg of glass, plastic, paper, metal & e-waste stored in database
+                Live active payout rates per 1kg for glass, plastic, paper, metal and e-waste
               </span>
             </div>
 
@@ -144,7 +144,7 @@ export const Rewards: React.FC = () => {
               padding: '6px 14px',
               borderRadius: '20px'
             }}>
-              🗄️ PostgreSQL Database Synced
+              ● Live Pricing Active
             </span>
           </div>
 

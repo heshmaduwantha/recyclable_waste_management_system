@@ -37,6 +37,7 @@ export interface PickupRequest {
     longitude: number;
   };
   notes?: string;
+  verificationPhoto?: string;
   createdAt: string;
   completedAt?: string;
 }

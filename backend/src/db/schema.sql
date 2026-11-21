@@ -54,6 +54,8 @@ CREATE TABLE pickups (
   scheduled_time_slot     VARCHAR(50)   NOT NULL,
   address_json            JSONB         NOT NULL,
   notes                   TEXT,
+  verification_photo      TEXT,
+  picker_rating           NUMERIC(3, 2) DEFAULT 5.00,
   created_at              TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
   assigned_at             TIMESTAMPTZ,
   accepted_at             TIMESTAMPTZ,

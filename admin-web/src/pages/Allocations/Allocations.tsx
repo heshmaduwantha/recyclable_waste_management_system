@@ -86,7 +86,7 @@ export const Allocations: React.FC = () => {
   };
 
   const pendingPickups = pickups.filter(p => p.status === 'pending' || p.pickerStatus === 'rejected');
-  const assignedPickups = pickups.filter(p => p.status === 'in_progress' && p.pickerStatus !== 'rejected');
+  const assignedPickups = pickups.filter(p => (p.status === 'assigned' || p.status === 'in_progress') && p.pickerStatus !== 'rejected');
 
   return (
     <>
@@ -263,12 +263,14 @@ export const Allocations: React.FC = () => {
                           <div>
                             <div style={{ fontWeight: 800, fontSize: '14px', color: adminTheme.colors.textPrimary }}>{pk.name}</div>
                             <div style={{ fontSize: '12px', color: adminTheme.colors.textSecondary, marginTop: '2px' }}>
-                              🚚 Truck: <strong>{(pk as any).vehicleNumber || 'WP-5842'}</strong> | 📍 City: {pk.address?.city || 'Colombo'}
+                              🚚 Vehicle: <strong>{(pk as any).vehicleNumber || 'Unassigned'}</strong> | 📍 Region: {pk.address?.city || 'Colombo'}
                             </div>
                           </div>
 
                           <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontSize: '12px', fontWeight: 700, color: adminTheme.colors.accent }}>⭐ {pk.rating || 4.9}</div>
+                            <div style={{ fontSize: '12px', fontWeight: 700, color: adminTheme.colors.accent }}>
+                              {pk.rating ? `⭐ ${Number(pk.rating).toFixed(1)}` : '⭐ 5.0'}
+                            </div>
                             <div style={{ fontSize: '11px', color: adminTheme.colors.textMuted }}>On Duty</div>
                           </div>
                         </div>

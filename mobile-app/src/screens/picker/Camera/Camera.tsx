@@ -46,7 +46,11 @@ export const PickerCamera: React.FC<{ navigation: any }> = ({ navigation }) => {
         </TouchableOpacity>
       ) : (
         <View style={{ paddingHorizontal: 24, paddingBottom: 24, gap: 10 }}>
-          <Button title="Use This Photo ✓" onPress={() => navigation.goBack()} themeRole="picker" />
+          <Button
+            title="Use This Photo ✓"
+            onPress={() => navigation.navigate('PickerWeight', { photoUri })}
+            themeRole="picker"
+          />
           <Button title="Retake Photo 📷" onPress={openRealCamera} variant="outline" />
         </View>
       )}

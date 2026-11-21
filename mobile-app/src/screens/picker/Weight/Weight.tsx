@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import { Button } from '../../../common/Button/Button';
 import { usePickup } from '../../../store/pickup/PickupContext';
 import { useAuth } from '../../../store/auth/AuthContext';
 import { pickerService, CompleteResult, formatLkr } from '../../../services/picker.service';
 
-export const PickerWeight: React.FC<{ navigation: any }> = ({ navigation }) => {
+export const PickerWeight: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
   const { activeJob, setActiveJob } = usePickup();
   const { user } = useAuth();
   const [actualWeight, setActualWeight] = useState(activeJob ? String(activeJob.totalEstimatedWeight) : '');
+  const [photoUri, setPhotoUri] = useState<string | null>(route?.params?.photoUri || null);
   const [result, setResult] = useState<CompleteResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [completedId, setCompletedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (route?.params?.photoUri) {
+      setPhotoUri(route.params.photoUri);
+    }
+  }, [route?.params?.photoUri]);
 
   // Live estimate of points using the job's per-category rates (server recalculates on submit)
   const estPtsPerKg = activeJob ? activeJob.estimatedPoints / activeJob.totalEstimatedWeight : 0;
@@ -30,7 +37,7 @@ export const PickerWeight: React.FC<{ navigation: any }> = ({ navigation }) => {
     setSubmitting(true);
     setError(null);
     try {
-      const res = await pickerService.complete(activeJob.id, weightNum);
+      const res = await pickerService.complete(activeJob.id, weightNum, photoUri || undefined);
       setCompletedId(activeJob.id);
       setResult(res);
       setActiveJob(null);
@@ -111,8 +118,15 @@ export const PickerWeight: React.FC<{ navigation: any }> = ({ navigation }) => {
         />
       </View>
 
+      {photoUri && (
+        <View style={{ marginTop: 14, borderRadius: 16, overflow: 'hidden', borderWidth: 1.5, borderColor: '#0284C7', backgroundColor: '#F0F9FF', padding: 8 }}>
+          <Image source={{ uri: photoUri }} style={{ width: '100%', height: 160, borderRadius: 12 }} resizeMode="cover" />
+          <Text style={{ textAlign: 'center', marginTop: 6, fontSize: 12, fontWeight: '700', color: '#0284C7' }}>✓ Doorstep Verification Photo Attached</Text>
+        </View>
+      )}
+
       <TouchableOpacity style={styles.camBtn} onPress={() => navigation.navigate('PickerCamera')}>
-        <Text style={styles.camTxt}>📸 Take Doorstep Verification Photo</Text>
+        <Text style={styles.camTxt}>{photoUri ? '📸 Retake Verification Photo' : '📸 Take Doorstep Verification Photo'}</Text>
       </TouchableOpacity>
 
       {error && <Text style={{ color: '#DC2626', fontWeight: '600', marginTop: 12 }}>⚠️ {error}</Text>}

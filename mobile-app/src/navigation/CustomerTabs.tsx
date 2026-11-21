@@ -59,6 +59,20 @@ const HomeStack = () => (
 
 
 
+const ProfileStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="ProfileMain" component={CustomerProfile} />
+    <Stack.Screen name="BadgeDetails" component={CustomerBadgeDetails} />
+    <Stack.Screen name="EditProfile" component={CustomerEditProfile} />
+    <Stack.Screen name="SavedAddresses" component={CustomerSavedAddresses} />
+    <Stack.Screen name="History" component={CustomerHistory} />
+    <Stack.Screen name="Settings" component={CustomerSettings} />
+    <Stack.Screen name="HelpSupport" component={HelpSupport} />
+    <Stack.Screen name="AboutApp" component={AboutApp} />
+    <Stack.Screen name="Feedback" component={Feedback} />
+  </Stack.Navigator>
+);
+
 export const CustomerTabs: React.FC = () => {
   return (
     <Tab.Navigator
@@ -88,7 +102,7 @@ export const CustomerTabs: React.FC = () => {
             iconName = focused ? 'leaf' : 'leaf-outline';
           } else if (route.name === 'Wallet') {
             iconName = focused ? 'wallet' : 'wallet-outline';
-          } else if (route.name === 'Profile') {
+          } else if (route.name === 'ProfileTab') {
             iconName = focused ? 'person' : 'person-outline';
           }
 
@@ -99,7 +113,7 @@ export const CustomerTabs: React.FC = () => {
       <Tab.Screen name="HomeTab" component={HomeStack} options={{ title: 'Home' }} />
       <Tab.Screen name="RequestsTab" component={CustomerPickup} options={{ title: 'Pickup' }} />
       <Tab.Screen name="Wallet" component={CustomerWallet} options={{ title: 'Wallet' }} />
-      <Tab.Screen name="Profile" component={CustomerProfile} options={{ title: 'Profile' }} />
+      <Tab.Screen name="ProfileTab" component={ProfileStack} options={{ title: 'Profile' }} />
     </Tab.Navigator>
   );
 };

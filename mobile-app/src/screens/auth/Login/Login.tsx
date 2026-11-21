@@ -8,9 +8,8 @@ import { UserRole } from '../../../../../shared/types';
 
 export const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { login } = useAuth();
-  const [selectedRole, setSelectedRole] = useState<UserRole>('customer');
-  const [email, setEmail] = useState('priya@gmail.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,8 +22,9 @@ export const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
     setSubmitting(true);
     setError(null);
     try {
-      const userObj = await authService.login(email, password, selectedRole);
-      login(selectedRole, userObj);
+      const userObj = await authService.login(email.trim(), password);
+      const actualRole: UserRole = (userObj.role as UserRole) || 'customer';
+      login(actualRole, userObj);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -43,34 +43,7 @@ export const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
         </View>
 
         <Text style={styles.title}>Welcome back</Text>
-        <Text style={styles.subtitle}>Sign in to continue to your account</Text>
-
-        {/* Role Toggle Selector */}
-        <View style={styles.roleToggleRow}>
-          <TouchableOpacity
-            style={[styles.roleTab, selectedRole === 'customer' && styles.activeRoleTabCustomer]}
-            onPress={() => {
-              setSelectedRole('customer');
-              setEmail('priya@gmail.com');
-            }}
-          >
-            <Text style={[styles.roleTabTxt, selectedRole === 'customer' && styles.activeRoleTxt]}>
-              👤 Customer
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.roleTab, selectedRole === 'picker' && styles.activeRoleTabPicker]}
-            onPress={() => {
-              setSelectedRole('picker');
-              setEmail('suresh@ecocollect.lk');
-            }}
-          >
-            <Text style={[styles.roleTabTxt, selectedRole === 'picker' && styles.activeRoleTxt]}>
-              🚛 Collector
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.subtitle}>Sign in to your account</Text>
       </View>
 
       <View style={styles.formSection}>
@@ -78,8 +51,9 @@ export const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
           label="EMAIL ADDRESS"
           value={email}
           onChangeText={setEmail}
-          placeholder="priya@gmail.com"
+          placeholder="name@domain.com"
           keyboardType="email-address"
+          autoCapitalize="none"
           leftIcon={<Text style={{ fontSize: 16, color: '#64748B' }}>👤</Text>}
         />
 
@@ -98,54 +72,31 @@ export const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
             onPress={() => setRememberMe(!rememberMe)}
             activeOpacity={0.8}
           >
-            <View style={[styles.checkbox, rememberMe && (selectedRole === 'customer' ? styles.checkedBoxCustomer : styles.checkedBoxPicker)]}>
+            <View style={[styles.checkbox, rememberMe && styles.checkedBox]}>
               {rememberMe && <Text style={{ color: '#FFFFFF', fontSize: 10, fontWeight: '900' }}>✓</Text>}
             </View>
             <Text style={styles.rememberTxt}>Remember me</Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-            <Text style={[styles.forgotTxt, { color: selectedRole === 'customer' ? '#10B981' : '#0284C7' }]}>
-              Forgot password?
-            </Text>
+            <Text style={styles.forgotTxt}>Forgot password?</Text>
           </TouchableOpacity>
         </View>
 
-        {error && <Text style={{ color: '#DC2626', fontSize: 13, fontWeight: '600', marginBottom: 4 }}>⚠️ {error}</Text>}
+        {error && <Text style={{ color: '#DC2626', fontSize: 13, fontWeight: '600', marginBottom: 6 }}>⚠️ {error}</Text>}
 
         <Button
           title="Sign In"
           onPress={handleLogin}
           loading={submitting}
           disabled={submitting}
-          themeRole={selectedRole === 'picker' ? 'picker' : 'customer'}
           style={{ marginTop: 8 }}
         />
-
-        <View style={styles.dividerRow}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerTxt}>OR</Text>
-          <View style={styles.dividerLine} />
-        </View>
-
-        <View style={styles.socialRow}>
-          <TouchableOpacity style={styles.socialBtn}>
-            <Text style={{ fontSize: 16, fontWeight: '900', color: '#EA4335' }}>G</Text>
-            <Text style={styles.socialBtnTxt}>Google</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.socialBtn}>
-            <Text style={{ fontSize: 16, fontWeight: '900', color: '#1877F2' }}>f</Text>
-            <Text style={styles.socialBtnTxt}>Facebook</Text>
-          </TouchableOpacity>
-        </View>
 
         <View style={styles.footerRow}>
           <Text style={styles.noAccountTxt}>Don't have an account? </Text>
           <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-            <Text style={[styles.registerTxt, { color: selectedRole === 'customer' ? '#10B981' : '#0284C7' }]}>
-              Register
-            </Text>
+            <Text style={styles.registerTxt}>Register</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -159,92 +110,70 @@ const styles = StyleSheet.create({
     backgroundColor: '#F4FCEB'
   },
   contentContainer: {
-    paddingHorizontal: 24,
-    paddingTop: 56,
     paddingBottom: 40
   },
-
   header: {
-    marginBottom: 28
+    paddingTop: 64,
+    paddingHorizontal: 24,
+    paddingBottom: 24
   },
   brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 20
+    gap: 12,
+    marginBottom: 24
   },
   brandIconBg: {
     width: 44,
     height: 44,
     borderRadius: 14,
-    backgroundColor: '#BEF264',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: '#18181B'
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 3
   },
   brandTxt: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '900',
-    color: '#18181B',
-    letterSpacing: -0.4
+    color: '#0F172A',
+    letterSpacing: -0.5
   },
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '900',
-    color: '#18181B',
-    letterSpacing: -0.5
+    color: '#0F172A',
+    letterSpacing: -0.8
   },
   subtitle: {
     fontSize: 14,
-    color: '#256D38',
-    fontWeight: '700',
-    fontStyle: 'italic',
+    color: '#64748B',
     marginTop: 4,
-    marginBottom: 20
-  },
-  roleToggleRow: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 4,
-    borderWidth: 1.5,
-    borderColor: '#18181B'
-  },
-  roleTab: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 14,
-    alignItems: 'center'
-  },
-  activeRoleTabCustomer: {
-    backgroundColor: '#10B981',
-    borderWidth: 1.5,
-    borderColor: '#18181B'
-  },
-  activeRoleTabPicker: {
-    backgroundColor: '#0284C7',
-    borderWidth: 1.5,
-    borderColor: '#18181B'
-  },
-  roleTabTxt: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#3F3F46'
-  },
-  activeRoleTxt: {
-    color: '#FFFFFF',
-    fontWeight: '800'
+    fontWeight: '500'
   },
   formSection: {
-    width: '100%'
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 40,
+    minHeight: 520,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: -10 },
+    shadowOpacity: 0.04,
+    shadowRadius: 20,
+    elevation: 10
   },
   optionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
-    marginTop: 4
+    marginTop: 8,
+    marginBottom: 16
   },
   rememberBox: {
     flexDirection: 'row',
@@ -252,83 +181,42 @@ const styles = StyleSheet.create({
     gap: 8
   },
   checkbox: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
     borderRadius: 6,
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: '#CBD5E1',
     alignItems: 'center',
     justifyContent: 'center'
   },
-  checkedBoxCustomer: {
+  checkedBox: {
     backgroundColor: '#10B981',
     borderColor: '#10B981'
   },
-  checkedBoxPicker: {
-    backgroundColor: '#0284C7',
-    borderColor: '#0284C7'
-  },
   rememberTxt: {
     fontSize: 13,
-    fontWeight: '700',
-    color: '#334155'
+    color: '#64748B',
+    fontWeight: '600'
   },
   forgotTxt: {
     fontSize: 13,
-    fontWeight: '800'
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 24
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#F1F5F9'
-  },
-  dividerTxt: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#94A3B8',
-    marginHorizontal: 16
-  },
-  socialRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 28
-  },
-  socialBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    height: 48,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#FFFFFF'
-  },
-  socialBtnTxt: {
-    fontSize: 14,
     fontWeight: '700',
-    color: '#334155'
+    color: '#10B981'
   },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: 24
   },
   noAccountTxt: {
     fontSize: 14,
     color: '#64748B',
-    fontWeight: '600'
+    fontWeight: '500'
   },
   registerTxt: {
     fontSize: 14,
-    fontWeight: '800'
+    fontWeight: '800',
+    color: '#10B981'
   }
 });
-
-

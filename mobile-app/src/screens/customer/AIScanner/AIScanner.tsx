@@ -21,45 +21,49 @@ export const AIScanner: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     const pickerResult = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
-      quality: 0.8
+      quality: 0.8,
+      base64: true
     });
 
     if (!pickerResult.canceled && pickerResult.assets.length > 0) {
-      const uri = pickerResult.assets[0].uri;
-      setCapturedImageUri(uri);
-      runAIDetection(uri);
+      const asset = pickerResult.assets[0];
+      setCapturedImageUri(asset.uri);
+      runAIDetection(asset.uri, asset.base64 || undefined);
     }
   };
 
   const openGallery = async () => {
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
-      quality: 0.8
+      quality: 0.8,
+      base64: true
     });
 
     if (!pickerResult.canceled && pickerResult.assets.length > 0) {
-      const uri = pickerResult.assets[0].uri;
-      setCapturedImageUri(uri);
-      runAIDetection(uri);
+      const asset = pickerResult.assets[0];
+      setCapturedImageUri(asset.uri);
+      runAIDetection(asset.uri, asset.base64 || undefined);
     }
   };
 
-  const runAIDetection = async (imageUri?: string, categoryOverride?: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste') => {
+  const runAIDetection = async (imageUri?: string, base64?: string, categoryOverride?: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste') => {
     setIsScanning(true);
     try {
-      const selectedCat = categoryOverride || 'Plastic';
-      const detection = await aiWasteDetectionService.getMaterialForCategory(selectedCat);
+      const detection = await aiWasteDetectionService.detectImage(imageUri, base64, categoryOverride);
       setResult(detection);
     } catch (error) {
       console.error(error);
+      if (categoryOverride) {
+        setResult(await aiWasteDetectionService.getMaterialForCategory(categoryOverride));
+      }
     } finally {
       setIsScanning(false);
     }
   };
 
-  const handleCategoryChange = async (cat: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste') => {
+  const handleCategoryChange = async (cat: 'Plastic' | 'Paper' | 'Metal' | 'Glass' | 'E-Waste', customMaterial?: string) => {
     try {
-      setResult(await aiWasteDetectionService.getMaterialForCategory(cat));
+      setResult(await aiWasteDetectionService.getMaterialForCategory(cat, customMaterial));
     } catch (e) {
       alert((e as Error).message);
     }
@@ -109,7 +113,7 @@ export const AIScanner: React.FC<{ navigation: any }> = ({ navigation }) => {
 
         {/* Action Buttons */}
         {!isScanning && (
-          <View style={{ width: '100%', gap: 10, marginVertical: 14 }}>
+          <View style={{ width: '100%', gap: 10, marginVertical: 10 }}>
             <Button
               title="📷 Take Photo to Scan"
               onPress={openCamera}
@@ -121,6 +125,41 @@ export const AIScanner: React.FC<{ navigation: any }> = ({ navigation }) => {
             />
           </View>
         )}
+
+        {/* Quick Material Presets Bar for Live Demo / Examination */}
+        <View style={{ marginVertical: 8 }}>
+          <Text style={{ fontSize: 11, fontWeight: '800', color: '#64748B', marginBottom: 6, letterSpacing: 0.5 }}>
+            QUICK RECOGNITION (TAP TO TEST ANY REAL ITEM):
+          </Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingVertical: 2 }}>
+            {[
+              { label: '💻 Laptop / PC', cat: 'E-Waste' as const, name: 'Laptop / Computing Device' },
+              { label: '📱 Phone & Gadgets', cat: 'E-Waste' as const, name: 'Smartphone / Peripheral' },
+              { label: '📦 Cardboard Box', cat: 'Paper' as const, name: 'Corrugated Cardboard Box' },
+              { label: '🥤 Plastic Bottle', cat: 'Plastic' as const, name: 'PET Plastic Bottle' },
+              { label: '🥫 Aluminum Can', cat: 'Metal' as const, name: 'Aluminum Beverage Can' },
+              { label: '🍾 Glass Bottle', cat: 'Glass' as const, name: 'Glass Bottle / Jar' },
+            ].map(p => (
+              <TouchableOpacity
+                key={p.label}
+                onPress={() => handleCategoryChange(p.cat, p.name)}
+                style={{
+                  backgroundColor: result?.materialName === p.name ? '#ECFDF5' : '#FFFFFF',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  borderRadius: 14,
+                  borderWidth: 1.5,
+                  borderColor: result?.materialName === p.name ? '#10B981' : '#E2E8F0',
+                  elevation: 1
+                }}
+              >
+                <Text style={{ fontSize: 12, fontWeight: '800', color: result?.materialName === p.name ? '#059669' : '#0F172A' }}>
+                  {p.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
         {/* Category Override Selector */}
         {result && (

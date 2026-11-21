@@ -76,7 +76,7 @@ export const CustomerProfile: React.FC<{ navigation?: any }> = ({ navigation }) 
         <View style={styles.badgesGrid}>
           {error && <Text style={{ color: '#DC2626' }}>⚠️ {error}</Text>}
           {badges.map((badge) => (
-            <TouchableOpacity key={badge.id} activeOpacity={0.85} onPress={() => navigation?.navigate('HomeTab', { screen: 'BadgeDetails', params: { badge } })}>
+            <TouchableOpacity key={badge.id} activeOpacity={0.85} onPress={() => navigation?.navigate('BadgeDetails', { badge })}>
             <Card style={styles.badgeCard}>
               <View style={{ opacity: badge.isUnlocked ? 1 : 0.45, alignItems: 'center' }}>
                 <Text style={styles.badgeIcon}>{badge.icon}</Text>
@@ -101,7 +101,7 @@ export const CustomerProfile: React.FC<{ navigation?: any }> = ({ navigation }) 
             { label: 'Saved Addresses', sub: 'Doorstep pickup locations', icon: 'location-outline', screen: 'SavedAddresses' },
             { label: 'Recycling History', sub: 'All your pickup requests', icon: 'time-outline', screen: 'History' }
           ].map((o) => (
-            <TouchableOpacity key={o.screen} style={styles.optionRow} onPress={() => navigation?.navigate('HomeTab', { screen: o.screen })} activeOpacity={0.8}>
+            <TouchableOpacity key={o.screen} style={styles.optionRow} onPress={() => navigation?.navigate(o.screen)} activeOpacity={0.8}>
               <View style={[styles.optionIconBg, { backgroundColor: '#ECFDF5' }]}>
                 <Ionicons name={o.icon as any} size={20} color="#10B981" />
               </View>
