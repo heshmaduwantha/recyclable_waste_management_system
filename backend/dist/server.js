@@ -102,7 +102,7 @@ function relativeTime(date) {
 function friendlyDate(date) {
     const d = new Date(date);
     const today = new Date();
-    const yest = new Date(Date.now() - 86400000);
+    const yest = new Date(Date.now() - 86_400_000);
     if (d.toDateString() === today.toDateString())
         return 'Today';
     if (d.toDateString() === yest.toDateString())

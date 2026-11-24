@@ -24,6 +24,10 @@ Thumbs.db
 *.log
 npm-debug.log*
 
+# Local runtime & uploads
+work/
+backend/uploads/
+
 # IDE
 .vscode/
 .idea/

@@ -17,19 +17,33 @@ export const Register: React.FC<{ navigation: any }> = ({ navigation }) => {
   // Doorstep Location Details
   const [houseNumber, setHouseNumber] = useState('');
   const [streetAddress, setStreetAddress] = useState('');
+  const [city, setCity] = useState('');
   const [landmark, setLandmark] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [isFetchingGps, setIsFetchingGps] = useState(false);
+  const [gpsStatus, setGpsStatus] = useState<string | null>(null);
+  const [gpsError, setGpsError] = useState<string | null>(null);
 
   const fetchGpsLocation = async () => {
     setIsFetchingGps(true);
+    setGpsError(null);
+    setGpsStatus(null);
     try {
-      // Simulate reverse geocoding current GPS coordinates
-      const addr = await locationService.reverseGeocode(6.9147, 79.8653);
-      setHouseNumber('No. 45/A');
-      setStreetAddress('Ward Place, Colombo 07');
-      setLandmark('Near Town Hall');
-    } catch (error) {
-      console.warn(error);
+      const live = await locationService.fetchLiveLocation();
+      setHouseNumber(live.houseNumber || '');
+      setStreetAddress(live.street || '');
+      setCity(live.city || '');
+      setLandmark(live.landmark || '');
+      setZipCode(live.zipCode || '');
+      setCoords({ latitude: live.latitude, longitude: live.longitude });
+      setGpsStatus(
+        live.city
+          ? `Live location fetched: ${live.city} (${live.latitude.toFixed(4)}, ${live.longitude.toFixed(4)})`
+          : `GPS coordinates fetched (${live.latitude.toFixed(4)}, ${live.longitude.toFixed(4)})`
+      );
+    } catch (err) {
+      setGpsError((err as Error).message || 'Could not fetch live GPS location.');
     } finally {
       setIsFetchingGps(false);
     }
@@ -44,7 +58,8 @@ export const Register: React.FC<{ navigation: any }> = ({ navigation }) => {
       return;
     }
     const parts = streetAddress.split(',').map((p) => p.trim()).filter(Boolean);
-    const city = parts.length > 1 ? parts.pop()! : '';
+    const resolvedCity = city.trim() || (parts.length > 1 ? parts.pop()! : '');
+    const streetValue = `${houseNumber.trim()} ${parts.join(', ')}`.trim();
     setSubmitting(true);
     setError(null);
     try {
@@ -54,7 +69,12 @@ export const Register: React.FC<{ navigation: any }> = ({ navigation }) => {
         phone: phone.trim(),
         password,
         role: 'customer',
-        address: { street: `${houseNumber} ${parts.join(', ')}`.trim(), city, zipCode: '' }
+        address: {
+          street: streetValue,
+          city: resolvedCity,
+          zipCode: zipCode.trim(),
+          ...(coords ? { latitude: coords.latitude, longitude: coords.longitude } : {})
+        }
       });
       login('customer', created);
     } catch (err) {
@@ -125,6 +145,9 @@ export const Register: React.FC<{ navigation: any }> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
+        {gpsStatus && <Text style={styles.gpsStatusTxt}>✅ {gpsStatus}</Text>}
+        {gpsError && <Text style={styles.gpsErrorTxt}>⚠️ {gpsError}</Text>}
+
         <Input
           label="HOUSE / BUILDING NUMBER"
           value={houseNumber}
@@ -133,11 +156,18 @@ export const Register: React.FC<{ navigation: any }> = ({ navigation }) => {
           leftIcon={<Text style={{ fontSize: 16 }}>🏠</Text>}
         />
         <Input
-          label="STREET NAME & AREA / CITY"
+          label="STREET NAME & AREA"
           value={streetAddress}
           onChangeText={setStreetAddress}
-          placeholder="e.g. Ward Place, Colombo 07"
+          placeholder="e.g. Ward Place"
           leftIcon={<Text style={{ fontSize: 16 }}>📍</Text>}
+        />
+        <Input
+          label="CITY"
+          value={city}
+          onChangeText={setCity}
+          placeholder="e.g. Colombo"
+          leftIcon={<Text style={{ fontSize: 16 }}>🏙️</Text>}
         />
         <Input
           label="NEARBY LANDMARK"
@@ -248,6 +278,20 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     color: '#059669'
+  },
+  gpsStatusTxt: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#059669',
+    marginTop: 4,
+    marginBottom: 6
+  },
+  gpsErrorTxt: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#DC2626',
+    marginTop: 4,
+    marginBottom: 6
   },
   footerRow: {
     flexDirection: 'row',

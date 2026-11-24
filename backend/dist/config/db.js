@@ -3,7 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkDatabase = exports.newId = exports.verifyPassword = exports.hashPassword = exports.PICKER_COMMISSION_RATE = exports.POINT_VALUE_LKR = exports.pool = exports.pgConfig = void 0;
+exports.PICKER_COMMISSION_RATE = exports.POINT_VALUE_LKR = exports.pool = exports.pgConfig = void 0;
+exports.hashPassword = hashPassword;
+exports.verifyPassword = verifyPassword;
+exports.newId = newId;
+exports.checkDatabase = checkDatabase;
 const pg_1 = __importDefault(require("pg"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
@@ -30,7 +34,6 @@ function hashPassword(plain) {
     const hash = crypto_1.default.scryptSync(plain, salt, 64).toString('hex');
     return `${salt}:${hash}`;
 }
-exports.hashPassword = hashPassword;
 function verifyPassword(plain, stored) {
     const [salt, hash] = (stored || '').split(':');
     if (!salt || !hash)
@@ -39,11 +42,9 @@ function verifyPassword(plain, stored) {
     const expected = Buffer.from(hash, 'hex');
     return candidate.length === expected.length && crypto_1.default.timingSafeEqual(candidate, expected);
 }
-exports.verifyPassword = verifyPassword;
 function newId(prefix) {
     return `${prefix}-${Date.now().toString(36).toUpperCase()}${crypto_1.default.randomBytes(2).toString('hex').toUpperCase()}`;
 }
-exports.newId = newId;
 async function checkDatabase() {
     const { rows } = await exports.pool.query("SELECT COUNT(*)::int AS n FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'pickups'");
     if (rows[0].n === 0) {
@@ -51,4 +52,3 @@ async function checkDatabase() {
     }
     console.log(`Connected to PostgreSQL '${exports.pgConfig.database}' on ${exports.pgConfig.host}:${exports.pgConfig.port}`);
 }
-exports.checkDatabase = checkDatabase;

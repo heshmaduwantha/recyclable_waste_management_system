@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     borderColor: '#BAE6FD'
   },
   mapGridLines: {
-    ...StyleSheet.absoluteFill
+    ...StyleSheet.absoluteFillObject
   },
   roadLineH: {
     position: 'absolute',
